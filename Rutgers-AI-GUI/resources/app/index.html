@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Happy Hacking!</title>
+  </head>
+  <body>
+    <div>
+    Puzzle size
+   <select id="input">
+  <option value="5">5</option>
+  <option value="7">7</option>
+  <option value="9">9</option>
+  <option value="11">11</option>
+    </select>
+    <button onclick="puzzleInput()" style="height:20px;width:10vw"/>
+      Submit
+    </div>
+
+    <div style="position:relative">
+    <canvas id="dummy" width="800" height="800"></canvas>
+    </div>
+  </body>
+
+  <script>
+    // You can also require other files to run in this process
+    require('./renderer.js')
+  </script>
+
+
+<!-- //global value section -->
+<script>
+    var dataTree = [];
+    var visitMatrix=[];
+  </script>
+<!--function section  -->
+<script>                                           
+  
+
+    var squareSize =40;
+    var puzzleInput = function (){
+      visitMatrix=[];
+      var canvas = document.getElementById("dummy")    
+      var ctx = canvas.getContext("2d");
+      var width = canvas.width,height=canvas.height
+      //console.log("w:"+width+"  h:"+height)
+          ctx.clearRect(0, 0, width, height);
+      
+      var puzzleSideNumber = document.getElementById("input").value
+      
+      var count=0;
+      for(var i =0;i<puzzleSideNumber;i++){
+          visitMatrix.push([0])
+          for(var j =1;j<puzzleSideNumber;j++){
+              visitMatrix[i].push(0)
+              }
+        }
+
+      //console.log to show the matrix ===>
+          //console.log(JSON.stringify(visitMatrix))
+          
+          var xCor = 0,yCor=0;
+          for(var r =0;r<puzzleSideNumber;r++){
+            yCor=r*squareSize;
+             for(var c =0;c<puzzleSideNumber;c++){
+               xCor=c*squareSize;
+               if(c == puzzleSideNumber-1 && r==c)
+                    drawPuzzle(xCor,yCor,0);
+               else
+                    drawPuzzle(xCor,yCor,randomNumber(
+                      maxLegalJumpNumber(puzzleSideNumber,r,c)));
+             }
+              xCor=0;
+          }
+          
+    }
+    var maxLegalJumpNumber = function(Rmax,r,c){
+      return Math.max(Rmax-r,r-1,Rmax-c,c-1);
+
+    }
+
+    var drawPuzzle = function(x,y,number){
+          //========================================================
+          //Create a tree
+
+
+          //=====================================================
+
+          //console.log("("+x+","+y+")")
+          var ctx = document.getElementById("dummy").getContext("2d");
+          ctx.beginPath();
+          ctx.lineWidth="4";
+          ctx.strokeStyle="green";  
+          ctx.rect(0+x,0+y,squareSize,squareSize);
+          ctx.stroke();
+
+          ctx.font="15px Georgia";
+          ctx.fillText(number,0+x+squareSize/2,0+y+squareSize/2);
+
+    }
+    
+    var randomNumber = function(max){
+      var temp =Math.random()
+      return Math.floor(temp*(max)) == 0 
+      ? Math.ceil(temp*(max)) : Math.floor(temp*(max))
+    }
+
+
+  </script>
+</html>
