@@ -23,7 +23,9 @@
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
 
     </div>
-
+    <div>
+        <h3 id="k_value"></h3>
+    </div>
     <div style="position:relative;top:2em">
         <canvas id="dummy" width="1600" height="900"></canvas>
     </div>
@@ -110,6 +112,7 @@
         puzzleEvaluation()
     }
     var puzzleInput = function() {
+        document.getElementById("k_value").innerText = ""
         dataMatrix = [];
         visitMatrix = [];
         visualizingMatrix = [];
@@ -242,9 +245,11 @@
             xCor = 0;
         }
 
+        //this will print the matrix with no solution to goal cube
         if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X")
             console.log(JSON.stringify(dataMatrix))
 
+        document.getElementById("k_value").innerText = "The number of unreachable cubes (K) is " + countOfzeroes
         return countOfzeroes //this is the k
     }
 
