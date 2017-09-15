@@ -25,6 +25,8 @@
     </div>
     <div>
         <h3 id="k_value"></h3>
+        </br>
+        <p id="tree_section"></p>
     </div>
     <div style="position:relative;top:2em">
         <canvas id="dummy" width="1600" height="900"></canvas>
@@ -49,6 +51,7 @@
     var visitMatrix = [];
     var dataQueue = [];
     var visualizingMatrix = [];
+    var theTree = [];
 
     var squareSize = 40;
     var tease = function() {
@@ -113,9 +116,12 @@
     }
     var puzzleInput = function() {
         document.getElementById("k_value").innerText = ""
+        document.getElementById("tree_section").innerText = ""
         dataMatrix = [];
         visitMatrix = [];
         visualizingMatrix = [];
+        theTree = [];
+
         var canvas = document.getElementById("dummy")
         var ctx = canvas.getContext("2d");
         var width = canvas.width,
@@ -166,10 +172,19 @@
         //x+y to represent the location
         //initialize the queue at beginning
         dataQueue = ['0+0', '|'];
+        theTree = ['(0,0)', '|'];
         visitMatrix[0][0] = 1 //visited, so change to 1
 
         var barIndex = 0;
         var levelEnder = "";
+
+        var treePush = function(cord) {
+            if ((cord.split(",")[0] === ("(" + (puzzleSideNumber - 1))) &&
+                (cord.split(",")[1] === ((puzzleSideNumber - 1) + ")"))) {
+                cord = "(G,G)"
+            }
+            theTree.push(cord)
+        }
         while (dataQueue && dataQueue.length != 0) {
             var barFlag = false;
             //console.log(JSON.stringify(dataQueue))
@@ -212,18 +227,24 @@
                 if (HorizontalMoves[temp] < puzzleSideNumber && HorizontalMoves[temp] >= 0)
                     if (visitMatrix[HorizontalMoves[temp]][r] == 0) //if not visited
                     {
-                        dataQueue.push(HorizontalMoves[temp] + "+" + r)
+                        dataQueue.push(HorizontalMoves[temp] + "+" + r);
+                        treePush("(" + HorizontalMoves[temp] + "," + r + ")")
                         visitMatrix[HorizontalMoves[temp]][r] = 1 //visited, so change to 1
                     }
                 if (VerticalMoves[temp] < puzzleSideNumber && VerticalMoves[temp] >= 0)
                     if (visitMatrix[c][VerticalMoves[temp]] == 0) //if not visited
                     {
-                        dataQueue.push(c + "+" + VerticalMoves[temp])
+                        dataQueue.push(c + "+" + VerticalMoves[temp]);
+                        treePush("(" + c + "," + VerticalMoves[temp] + ")")
                         visitMatrix[c][VerticalMoves[temp]] = 1 //visited, so change to 1
                     }
             }
-            if (barFlag)
+            if (barFlag) {
                 dataQueue.push("|") //add spliter
+                theTree.push("|");
+            }
+
+
         }
 
         var countOfzeroes = 0;
@@ -245,11 +266,13 @@
             xCor = 0;
         }
 
+
         //this will print the matrix with no solution to goal cube
         if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X")
             console.log(JSON.stringify(dataMatrix))
 
         document.getElementById("k_value").innerText = "The number of unreachable cubes (K) is " + countOfzeroes
+        document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
         return countOfzeroes //this is the k
     }
 
