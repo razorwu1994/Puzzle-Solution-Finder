@@ -84,57 +84,57 @@
             }
            
         }
-        //console.log(JSON.stringify(visitMatrix))
 
     }
 
     var basicHillClimb = function(){
-        var prevEval = puzzleEvaluation();
-        var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
+        var itrInput = document.getElementById("climb_iteration").value
+        var iteration =0;
+        while(iteration++<itrInput){
+            var prevEval = puzzleEvaluation();
+            var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
-        var rRandom = Math.floor(Math.random()*puzzleSideNumber)
-        var cRandom = Math.floor(Math.random()*puzzleSideNumber)
-        while(rRandom === cRandom && rRandom === puzzleSideNumber-1)//Goal number needn't be changed
-        {
-            rRandom = Math.floor(Math.random()*puzzleSideNumber)
-            cRandom = Math.floor(Math.random()*puzzleSideNumber)
-        }
-        var unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, rRandom, cRandom))
-        var count =0;
-        while(unitNumber === dataMatrix[rRandom][cRandom]){
-        unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, rRandom, cRandom))
-        if(count++>5){
-            console.log("no more options")
-            break;
+            var rRandom = Math.floor(Math.random()*puzzleSideNumber)
+            var cRandom = Math.floor(Math.random()*puzzleSideNumber)
+            while(rRandom === cRandom && rRandom === puzzleSideNumber-1)//Goal number needn't be changed
+            {
+                rRandom = Math.floor(Math.random()*puzzleSideNumber)
+                cRandom = Math.floor(Math.random()*puzzleSideNumber)
+            }
+            var unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, rRandom, cRandom))
+            var count =0;
+            while(unitNumber === dataMatrix[rRandom][cRandom]){
+            unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, rRandom, cRandom))
+            if(count++>5){
+                console.log("no more options")
+                break;
+                }
+            }
+        
+        
+            dataMatrix[rRandom][cRandom] = unitNumber;
+
+            var postEval = puzzleEvaluation();
+            
+            if(postEval < prevEval){//revert
+                dataMatrix[rRandom][cRandom]=prevMatrix[rRandom][cRandom];
+                puzzleEvaluation();
+            }
+
+            cleanCanvas(0);
+            var xCor = 0,
+                yCor = 0;
+                squareSize=40;
+            for (var r = 0; r < puzzleSideNumber; r++) {
+                yCor = r * squareSize;
+                for (var c = 0; c < puzzleSideNumber; c++) {
+                    xCor = c * squareSize;
+                    drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
+                    drawPuzzle(xCor, yCor, visualizingMatrix[r][c], squareSize*puzzleSideNumber+50);
+                }
+                xCor = 0;
             }
         }
-        
-        //console.log(JSON.stringify(dataMatrix))
-        dataMatrix[rRandom][cRandom] = unitNumber;
-        //console.log(JSON.stringify(dataMatrix))
-        //console.log(JSON.stringify(visualizingMatrix))
-        var postEval = puzzleEvaluation();
-        
-
-        if(postEval < prevEval){//revert
-            dataMatrix[rRandom][cRandom]=prevMatrix[rRandom][cRandom];
-            console.log("revert"+JSON.stringify(dataMatrix))
-        }
-
-        cleanCanvas(0);
-        var xCor = 0,
-            yCor = 0;
-            squareSize=40;
-        for (var r = 0; r < puzzleSideNumber; r++) {
-            yCor = r * squareSize;
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                xCor = c * squareSize;
-                drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
-                drawPuzzle(xCor, yCor, visualizingMatrix[r][c], squareSize*puzzleSideNumber+50);
-            }
-            xCor = 0;
-        }
-
     }
     var tease = function() {
         // dataMatrix = [
