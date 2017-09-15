@@ -266,14 +266,21 @@
             xCor = 0;
         }
 
-
-        //this will print the matrix with no solution to goal cube
-        if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X")
-            console.log(JSON.stringify(dataMatrix))
-
-        document.getElementById("k_value").innerText = "The number of unreachable cubes (K) is " + countOfzeroes
         document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
-        return countOfzeroes //this is the k
+        
+        //this will print the matrix with no solution to goal cube
+        if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X"){
+            document.getElementById("k_value").innerText = "K is " +
+            parseInt(countOfzeroes)*(-1) 
+            console.log(JSON.stringify(dataMatrix))
+            return parseInt(countOfzeroes)*(-1) //this is the k
+        }
+        else{
+            document.getElementById("k_value").innerText = "K is " +
+            visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]
+            return visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] //this is the k
+        }
+        
     }
 
     var maxLegalJumpNumber = function(Rmax, r, c) {
