@@ -91,7 +91,7 @@ var basicHillClimb = function() {
 
 /**
  * Hill climb with random restarts by running several hill climbs and picking the best resulting puzzle
- * Must have a value in # of iterations and # of restarts
+ * Must have a value in # of iterations and # of restarts in the GUI
  */
 var hillClimbWithRestarts = function() {
     var num_restarts = document.getElementById("num_restarts").value
@@ -114,7 +114,7 @@ var hillClimbWithRestarts = function() {
         if(i == 0){
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
-        // Otherwise if the current value is better, replace the best matrix with the curr one
+        // Otherwise if the current value is better, replace the best matrix with the current one
         }else if(currEvalValue > bestEvalValue){
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
@@ -122,7 +122,7 @@ var hillClimbWithRestarts = function() {
     }
 
     // Draw best matrix and its evaluation matrix to the screen
-    dataMatrix = JSON.parse(JSON.stringify(currPuzzle));
+    dataMatrix = JSON.parse(JSON.stringify(bestPuzzle));
 
     cleanCanvas(0);
     puzzleSideNumber = parseInt(document.getElementById("input").value)    
