@@ -78,6 +78,7 @@ var basicHillClimb = function() {
     }
 }
 var tease = function() {
+    document.getElementById("eval").disabled=false;
     // dataMatrix = [
     //     ["2", "2", "2", "4", "3"],
     //     ["2", "2", "3", "3", "3"],
