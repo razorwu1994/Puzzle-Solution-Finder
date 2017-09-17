@@ -18,13 +18,14 @@
   <option value="11">11</option>
     </select>
         <button onclick="puzzleInput()" style="height:20px;width:20vw" /> Puzzle Generate</br>
-        <button onclick="puzzleEvaluation()" style="height:20px;width:20vw" id="eval"/> Puzzle Evaluation</br>
+        <button onclick="puzzleEvaluation()" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
         <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
-        <div >
-            <button onclick="basicHillClimb()" style="height:20px;width:20vw" >
+        <button onclick="testMatrix()" style="height:20px;width:20vw"/> Test Matrix </br>
+        <div>
+            <button onclick="basicHillClimb()" style="height:20px;width:20vw">
              Basic Hill Climb</button>
-        <input value='1' type="text" id="climb_iteration" />
+            <input value='1' type="text" id="climb_iteration" />
         </div>
     </div>
     <div>
@@ -45,10 +46,9 @@
 
 
 <!-- Backend function section -->
-<!-- //note:remember build the tree  -->
-<script>
-</script>
-<!-- GUI function section -->
+<!-- //note:import js files here  -->
+<script src="Assignment-One/index.js"></script>
+<!-- GUI function section (place global variables here) -->
 <script>
     var puzzleSideNumber;
     var dataMatrix = [];
@@ -56,6 +56,7 @@
     var dataQueue = [];
     var visualizingMatrix = [];
     var theTree = [];
+<<<<<<< HEAD
 
     var squareSize = 40;
 
@@ -361,6 +362,8 @@
         return Math.floor(temp * (max)) == 0 ?
             Math.ceil(temp * (max)) : Math.floor(temp * (max))
     }
+=======
+>>>>>>> fe8fe2836db34be99b5e60a4021665333eb5af79
 </script>
 
 </html>
