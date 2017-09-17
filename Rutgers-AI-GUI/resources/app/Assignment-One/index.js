@@ -2,7 +2,7 @@ var squareSize = 40;
 
 var cleanCanvas = function(offset) {
     var canvas = document.getElementById("dummy")
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d"); 
     var width = canvas.width,
         height = canvas.height
         //console.log("w:"+width+"  h:"+height)
@@ -28,6 +28,13 @@ var initializeMatrix = function() {
 
 }
 
+/**
+ * Take the current data matrix, then pick a random cell (besides the goal), and change it.
+ * If the new matrix is better than the current matrix, keep the change.
+ * Otherwise keep the old matrix.
+ * 
+ * @return {number} evaluation function value for the new matrix after hill climbing
+ */
 var basicHillClimb = function() {
     var itrInput = document.getElementById("climb_iteration").value
     var iteration = 0;
@@ -76,7 +83,68 @@ var basicHillClimb = function() {
             xCor = 0;
         }
     }
+
+    console.log("Evaluated value: " + postEval);
+    console.log("Matrix: " + dataMatrix);
+    return postEval;
 }
+
+/**
+ * Hill climb with random restarts by running several hill climbs and picking the best resulting puzzle
+ * Must have a value in # of iterations and # of restarts
+ */
+var hillClimbWithRestarts = function() {
+    var num_restarts = document.getElementById("num_restarts").value
+    console.log("# restarts = " + num_restarts);
+    var currEvalValue;
+    var bestPuzzle = [];
+    var bestEvalValue;
+
+    // For each restart iteration, generate a puzzle, hill climb with given # of iterations and compare against the best puzzle found so far
+    var i;
+    for(i = 0; i < num_restarts; i += 1){
+        console.log("restart " + i + ": ");
+
+        // Generate puzzle and copy data matrix over
+        puzzleInput();
+        var currEvalValue = basicHillClimb();
+        currPuzzle = JSON.parse(JSON.stringify(dataMatrix));
+
+        // On first iteration, copy over matrix and its evaluated function value
+        if(i == 0){
+            bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
+            bestEvalValue = currEvalValue;
+        // Otherwise if the current value is better, replace the best matrix with the curr one
+        }else if(currEvalValue > bestEvalValue){
+            bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
+            bestEvalValue = currEvalValue;
+        }
+    }
+
+    // Draw best matrix and its evaluation matrix to the screen
+    dataMatrix = JSON.parse(JSON.stringify(currPuzzle));
+
+    cleanCanvas(0);
+    puzzleSideNumber = parseInt(document.getElementById("input").value)    
+    initializeMatrix();
+    var xCor = 0,
+        yCor = 0;
+    for (var r = 0; r < puzzleSideNumber; r++) {
+        yCor = r * squareSize;
+        for (var c = 0; c < puzzleSideNumber; c++) {
+            xCor = c * squareSize;
+            if (c == puzzleSideNumber - 1 && r == c) {
+                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                drawPuzzle(xCor, yCor, 0, 0);
+            } else
+                drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
+        }
+        xCor = 0;
+    }
+
+    puzzleEvaluation();
+}
+
 var tease = function() {
     // dataMatrix = [
     //     ["2", "2", "2", "4", "3"],
@@ -114,10 +182,17 @@ var tease = function() {
     }
 
 }
+
+
+
 var puzzleCombo = function() {
     puzzleInput()
     puzzleEvaluation()
 }
+
+/**
+ * Generate a valid, random puzzle based on the chosen size
+ */
 var puzzleInput = function() {
     document.getElementById("eval").disabled = false;
     document.getElementById("k_value").innerText = ""
