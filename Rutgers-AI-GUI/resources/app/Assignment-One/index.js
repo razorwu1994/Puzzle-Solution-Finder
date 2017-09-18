@@ -33,10 +33,21 @@ var initializeMatrix = function() {
  * If the new matrix is better than the current matrix, keep the change.
  * Otherwise keep the old matrix.
  * 
+ * @param {boolean} allowDownhill determines whether downhill movement is allowed
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
-var basicHillClimb = function() {
-    var itrInput = document.getElementById("climb_iteration").value
+var basicHillClimb = function(allowDownhill) {
+    console.log(allowDownhill);
+    var itrInput = document.getElementById("climb_iteration").value;
+    var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
+    var randNum;
+
+    if(!allowDownhill){
+        p = 0;
+    }else{
+        p = document.getElementById().value;
+    }   
+
     var iteration = 0;
     while (iteration++ < itrInput) {
         var prevEval = puzzleEvaluation();
@@ -64,7 +75,11 @@ var basicHillClimb = function() {
 
         var postEval = puzzleEvaluation();
 
-        if (postEval < prevEval) { //revert
+        // Get a random number, x, to compare against p
+        // If x <= p, then allow downhill movement ????
+        randNum = Math.random();
+
+        if(postEval < prevEval && x > p) { //revert ????
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
             puzzleEvaluation();
         }
@@ -86,7 +101,12 @@ var basicHillClimb = function() {
 
     console.log("Evaluated value: " + postEval);
     console.log("Matrix: " + dataMatrix);
-    return postEval;
+
+    if(postEval < prevEval){
+        return prevEval;
+    }else{
+        return postEval;
+    }
 }
 
 /**
