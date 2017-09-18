@@ -42,10 +42,14 @@ var basicHillClimb = function(allowDownhill) {
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
 
+    
     if(!allowDownhill){
         p = 0;
     }else{
-        p = document.getElementById().value;
+        if(p<=1)
+        p = document.getElementById("prob_downhill").value;
+        else
+        p=1;
     }   
 
     var iteration = 0;
@@ -73,13 +77,16 @@ var basicHillClimb = function(allowDownhill) {
 
         dataMatrix[rRandom][cRandom] = unitNumber;
 
+        cleanCanvas(squareSize * puzzleSideNumber + 50);
+        
         var postEval = puzzleEvaluation();
 
         // Get a random number, x, to compare against p
         // If x <= p, then allow downhill movement ????
         randNum = Math.random();
 
-        if(postEval < prevEval && x > p) { //revert ????
+        //p=0;
+        if(postEval < prevEval && randNum >= p) { //revert ????
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
             puzzleEvaluation();
         }
