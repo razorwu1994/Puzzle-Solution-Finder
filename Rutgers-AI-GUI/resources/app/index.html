@@ -23,7 +23,7 @@
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
         
         <div>
-            <button onclick="basicHillClimb()" style="height:20px;width:20vw">
+            <button onclick="basicHillClimb(false)" style="height:20px;width:20vw">
              Basic Hill Climb</button>
             # of iterations: <input value='1' type="text" id="climb_iteration" />
         </div>
@@ -32,6 +32,12 @@
             <button onclick="hillClimbWithRestarts()" style="height:20px;width:20vw">
              Hill Climb w/ Random Restarts </button>
             # of restarts <input value='1' type="text" id="num_restarts" />
+        </div>
+
+        <div>
+            <button onclick="basicHillClimb(true)" style="height:20px;width:20vw">
+             Hill Climb w/ Random Walking </button>
+            probability (p): <input value='0' type="text" id="prob_downhill" />
         </div>
 
     </div>
