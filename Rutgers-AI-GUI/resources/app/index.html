@@ -6,6 +6,13 @@
     <title>Happy Hacking!</title>
 </head>
 
+<style>
+    .buttonDiv {
+        position: relative;
+        margin: 15px;
+    }
+</style>
+
 <body>
     <div>
         Puzzle size
@@ -21,26 +28,33 @@
         <button onclick="puzzleEvaluation()" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
         <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
-        
-        <div>
-            <button onclick="basicHillClimb(false)" style="height:20px;width:20vw">
-             Basic Hill Climb</button>
-            # of iterations: <input value='1' type="text" id="climb_iteration" />
-        </div>
+    </div>
 
-        <div>
-            <button onclick="hillClimbWithRestarts()" style="height:20px;width:20vw">
-             Hill Climb w/ Random Restarts </button>
-            # of restarts <input value='1' type="text" id="num_restarts" />
-        </div>
+    <div class="buttonDiv">
+        <button onclick="basicHillClimb(`basic`)" style="height:20px;width:20vw">
+             Basic Hill Climb</button> # of iterations: <input value='1' type="text" id="climb_iteration" />
+    </div>
 
-        <div>
-            <button onclick="basicHillClimb(true)" style="height:20px;width:20vw">
-             Hill Climb w/ Random Walking </button>
-            probability (p): <input value='0' type="text" id="prob_downhill" />
-        </div>
+    <div class="buttonDiv">
+        <button onclick="hillClimbWithRestarts()" style="height:20px;width:20vw">
+             Hill Climb w/ Random Restarts </button> # of restarts <input value='1' type="text" id="num_restarts" />
+    </div>
+
+    <div class="buttonDiv">
+        <button onclick="basicHillClimb(`randwalk`)" style="height:20px;width:20vw">
+             Hill Climb w/ Random Walking </button> probability (p): <input value='0' type="text" id="prob_downhill" />
+    </div>
+
+    <div class="buttonDiv">
+        <button onclick="basicHillClimb(`anneal`)" style="height:20px;width:20vw">
+            Simulated Annealing </button>
+        <span/> initial temperature: <input type="text" id="init_temperature" required/>
+        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" required/>
+        <h4> put your iterations under basic hill climb input for simulated annealing </h4>
 
     </div>
+
+
     <div>
         <h3 id="k_value"></h3>
         </br>
