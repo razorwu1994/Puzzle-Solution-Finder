@@ -1,5 +1,53 @@
 var squareSize = 40;
 
+
+var fileInput = function(){  
+    var temp = ''
+
+    var file = document.getElementById("fileForUpload").files[0];
+    
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = function (evt) {
+            temp =evt.target.result.replace(/\r/g, "\n");
+            var tempArray = temp.split("\n").filter((t => t.length !=0));
+            puzzleSideNumber = tempArray.length;
+            var xCor = 0,
+            yCor = 0;
+            for (var r = 0; r < puzzleSideNumber; r++) {
+            dataMatrix.push([0])
+            yCor = r * squareSize;
+            let charArray = tempArray[r].split(' ')
+            console.log(JSON.stringify(charArray))
+            
+            for (var c = 0; c < puzzleSideNumber; c++) {
+                let unitNumber = charArray[c]
+                console.log(unitNumber)
+                if (c == 0) {
+                    dataMatrix[r][0] = unitNumber;
+                } else {
+                    dataMatrix[r].push(unitNumber);
+                }
+                
+                xCor = c * squareSize;
+                if (c == puzzleSideNumber - 1 && r == c) {
+                    dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                    drawPuzzle(xCor, yCor, 0, 0);
+                } else
+                    drawPuzzle(xCor, yCor, unitNumber, 0);
+            }
+            xCor = 0;
+        }
+    
+            // temp = evt.target.result.replace(/\r/g, "<br/>");
+            // document.getElementById("fileContents").innerHTML = temp;
+        }
+        reader.onerror = function (evt) {
+            document.getElementById("fileContents").innerHTML = "error reading file";
+        }
+    }
+}
 var cleanCanvas = function(offset) {
     var canvas = document.getElementById("dummy")
     var ctx = canvas.getContext("2d"); 
@@ -28,6 +76,11 @@ var initializeMatrix = function() {
 
 }
 
+
+var globalMathE = function(){
+    return Math.pow(2,Math.LOG2E);
+}
+
 /**
  * Take the current data matrix, then pick a random cell (besides the goal), and change it.
  * If the new matrix is better than the current matrix, keep the change.
@@ -36,9 +89,6 @@ var initializeMatrix = function() {
  * @param {string} allowDownhill determines whether downhill movement is allowed
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
-var globalMathE = function(){
-    return Math.pow(2,Math.LOG2E);
-}
 var basicHillClimb = function(allowDownhill) {
     console.log(allowDownhill)
     var itrInput = document.getElementById("climb_iteration").value;
