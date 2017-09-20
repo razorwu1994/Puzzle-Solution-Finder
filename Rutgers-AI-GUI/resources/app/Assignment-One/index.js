@@ -2,8 +2,8 @@ var squareSize = 40;
 
 
 var fileInput = function(){  
+    dataMatrix=[];
     var temp = ''
-
     var file = document.getElementById("fileForUpload").files[0];
     
     if (file) {
@@ -13,13 +13,18 @@ var fileInput = function(){
             temp =evt.target.result.replace(/\r/g, "\n");
             var tempArray = temp.split("\n").filter((t => t.length !=0));
             puzzleSideNumber = tempArray.length;
+            cleanCanvas(0);
             var xCor = 0,
             yCor = 0;
             for (var r = 0; r < puzzleSideNumber; r++) {
             dataMatrix.push([0])
             yCor = r * squareSize;
             let charArray = tempArray[r].split(' ')
-            console.log(JSON.stringify(charArray))
+            //console.log(JSON.stringify(charArray))
+            if(charArray.length !== tempArray.length){
+                alert("please upload a square like data");
+                return;
+            }
             
             for (var c = 0; c < puzzleSideNumber; c++) {
                 let unitNumber = charArray[c]
@@ -345,6 +350,7 @@ var puzzleInput = function() {
 }
 var puzzleEvaluation = function() {
     //console.log("=================================================")
+    console.log(JSON.stringify(dataMatrix))
     initializeMatrix();
     document.getElementById("eval").disabled = true;
     var depth = 0;
