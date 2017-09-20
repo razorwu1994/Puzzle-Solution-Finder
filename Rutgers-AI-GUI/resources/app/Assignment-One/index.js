@@ -33,27 +33,42 @@ var initializeMatrix = function() {
  * If the new matrix is better than the current matrix, keep the change.
  * Otherwise keep the old matrix.
  * 
- * @param {boolean} allowDownhill determines whether downhill movement is allowed
+ * @param {string} allowDownhill determines whether downhill movement is allowed
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
+var globalMathE = function(){
+    return Math.pow(2,Math.LOG2E);
+}
 var basicHillClimb = function(allowDownhill) {
-    console.log(allowDownhill);
+    console.log(allowDownhill)
     var itrInput = document.getElementById("climb_iteration").value;
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
-
+    var temperature,decayrate;
     
-    if(!allowDownhill){
+    if(allowDownhill==="basic"){//if basic p = 0
         p = 0;
-    }else{
+    }else{//if randwalk or anneal
+        if(allowDownhill==="randwalk"){
         if(p<=1)
         p = document.getElementById("prob_downhill").value;
         else
         p=1;
+        }
+        else if(allowDownhill==="anneal"){
+         p = 1;//p is dynamically changing after each iteration
+         temperature = document.getElementById("init_temperature").value; // probability of allowing a downhill move
+         decayrate = document.getElementById("decayrate_temperature").value; // probability of allowing a downhill move
+         if(decayrate>=1){
+             alert("please enter smaller than 1 value");
+             return;
+         }
+        }
     }   
 
     var iteration = 0;
     while (iteration++ < itrInput) {
+
         var prevEval = puzzleEvaluation();
         var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
@@ -75,22 +90,35 @@ var basicHillClimb = function(allowDownhill) {
         }
 
 
+
         dataMatrix[rRandom][cRandom] = unitNumber;
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         
         var postEval = puzzleEvaluation();
 
+        //calculate the p if it is annealing
+        if(allowDownhill==="anneal"){
+            if(postEval<=prevEval)//downhill
+            {
+                p=Math.pow(globalMathE(),(postEval-prevEval)/temperature)
+            }
+            temperature *=decayrate//update the temprature
+            //console.log("eval: "+postEval+" at " + temperature);
+        }
         // Get a random number, x, to compare against p
         // If x <= p, then allow downhill movement ????
         randNum = Math.random();
 
-        //p=0;
-        if(postEval < prevEval && randNum >= p) { //revert ????
-            dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
-            puzzleEvaluation();
-        }
 
+        var k =prevEval;
+        //revert , when p is 1 , it is never reverted and downhill guaranteed
+        if(postEval < prevEval && randNum >= p) { 
+            dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
+            k = puzzleEvaluation();
+        }
+        //console.log("k  "+k+" temp at "+temperature)
+        
         cleanCanvas(0);
         var xCor = 0,
             yCor = 0;
@@ -106,8 +134,8 @@ var basicHillClimb = function(allowDownhill) {
         }
     }
 
-    console.log("Evaluated value: " + postEval);
-    console.log("Matrix: " + dataMatrix);
+    // console.log("Evaluated value: " + postEval);
+    // console.log("Matrix: " + dataMatrix);
 
     if(postEval < prevEval){
         return prevEval;
@@ -171,6 +199,9 @@ var hillClimbWithRestarts = function() {
 
     puzzleEvaluation();
 }
+
+
+
 
 var tease = function() {
     document.getElementById("eval").disabled=false;
