@@ -1,5 +1,51 @@
 var squareSize = 40;
 
+/**
+ * Helper function 1 for drawing puzzles in basicHillClimb
+ */
+var drawPuzzleHelper1 = function(r, c, xCor, yCor){
+    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    drawCell(xCor, yCor, dataMatrix[r][c], 0);
+    drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
+}
+
+/**
+ * Helper function 2 for drawing puzzles for hillClimbWithRestarts and tease
+ */
+var drawPuzzleHelper2 = function(r, c, xCor, yCor){
+    if (c == puzzleSideNumber - 1 && r == c) {
+        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0;
+        drawCell(xCor, yCor, 0, 0);
+    } else
+        drawCell(xCor, yCor, dataMatrix[r][c], 0);
+}
+
+/**
+ * Helper function 3 for drawing puzzles for puzzleInput
+ */
+var drawPuzzleHelper3 = function(r, c, xCor, yCor){
+    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    if (c == 0) {
+        dataMatrix[r][0] = unitNumber;
+    } else {
+        dataMatrix[r].push(unitNumber);
+    }
+
+    if (c == puzzleSideNumber - 1 && r == c) {
+        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+        drawCell(xCor, yCor, 0, 0);
+    } else
+        drawCell(xCor, yCor, unitNumber, 0);
+}
+
+/**
+ * Helper function 4 for drawing puzzles for puzzleEvaluation
+ */
+var drawPuzzleHelper4 = function(r, c, xCor, yCor){
+    let unitNumber = visualizingMatrix[r][c]
+    drawCell(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+}
+
 var cleanCanvas = function (offset) {
     var canvas = document.getElementById("dummy")
     var ctx = canvas.getContext("2d");
@@ -120,18 +166,7 @@ var basicHillClimb = function (allowDownhill) {
         //console.log("k  "+k+" temp at "+temperature)
 
         cleanCanvas(0);
-        var xCor = 0,
-            yCor = 0;
-        squareSize = 40;
-        for (var r = 0; r < puzzleSideNumber; r++) {
-            yCor = r * squareSize;
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                xCor = c * squareSize;
-                drawCell(xCor, yCor, dataMatrix[r][c], 0);
-                drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
-            }
-            xCor = 0;
-        }
+        drawPuzzle(drawPuzzleHelper1);
     }
 
     // console.log("Evaluated value: " + postEval);
@@ -180,8 +215,9 @@ var hillClimbWithRestarts = function () {
     dataMatrix = JSON.parse(JSON.stringify(bestPuzzle));
 
     puzzleSideNumber = parseInt(document.getElementById("input").value)
+    cleanCanvas(0);
     initializeMatrix();
-    drawPuzzle();
+    drawPuzzle(drawPuzzleHelper2);
     puzzleEvaluation();
 }
 
@@ -207,8 +243,9 @@ var tease = function () {
 
     puzzleSideNumber = 5;
 
+    cleanCanvas(0);
     initializeMatrix();
-    drawPuzzle();
+    drawPuzzle(drawPuzzleHelper2);
 }
 
 
@@ -232,30 +269,7 @@ var puzzleInput = function () {
 
     puzzleSideNumber = parseInt(document.getElementById("input").value)
     initializeMatrix();
-
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-
-        dataMatrix.push([0])
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
-            if (c == 0) {
-                dataMatrix[r][0] = unitNumber;
-            } else {
-                dataMatrix[r].push(unitNumber);
-            }
-
-            xCor = c * squareSize;
-            if (c == puzzleSideNumber - 1 && r == c) {
-                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                drawCell(xCor, yCor, 0, 0);
-            } else
-                drawCell(xCor, yCor, unitNumber, 0);
-        }
-        xCor = 0;
-    }
+    drawPuzzle(drawPuzzleHelper3, true)
 
     //console.log to show the matrix ===>
     //console.log(JSON.stringify(visitMatrix))
@@ -351,18 +365,7 @@ var puzzleEvaluation = function () {
     }
     //console.log(JSON.stringify(countOfzeroes))
 
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            let unitNumber = visualizingMatrix[r][c]
-            xCor = c * squareSize;
-            drawCell(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
-        }
-        xCor = 0;
-    }
-
+    drawPuzzle(drawPuzzleHelper4);
     document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
 
     //this will print the matrix with no solution to goal cube
@@ -411,38 +414,26 @@ var randomNumber = function (max) {
 /**
  * Draws the entire puzzle.
  * Make sure puzzleSideNumber is set before hand.
+ * 
+ * @param <function> drawingHelper helper function for customizing how the puzzle is drawn
+ * @param <boolean> option special flag for inputPuzzle()
  */
-var drawPuzzle = function () {
-    // Erase previous puzzles
-    cleanCanvas(0);
+var drawPuzzle = function (drawingHelper, option=false) {
     var xCor = 0,
         yCor = 0;
 
     squareSize = 40;
     for (var r = 0; r < puzzleSideNumber; r++) {
         yCor = r * squareSize;
+
+        if(option === true){
+            dataMatrix.push([0])            
+        }
+        
         for (var c = 0; c < puzzleSideNumber; c++) {
-            /*
-            let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
-            if (c == 0) {
-                dataMatrix[r][0] = unitNumber;
-            } else {
-                dataMatrix[r].push(unitNumber);
-            }
-            */
-
             xCor = c * squareSize;
-
-            /*
-            drawCell(xCor, yCor, dataMatrix[r][c], 0);
-            drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
-            */
-            if (c == puzzleSideNumber - 1 && r == c) {
-                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0;
-                drawCell(xCor, yCor, 0, 0);
-            } else
-                drawCell(xCor, yCor, dataMatrix[r][c], 0);
-                // drawCell(xCor, yCor, unitNumber, 0);
+            
+            drawingHelper(r, c, xCor, yCor);
         }
         xCor = 0;
     }
