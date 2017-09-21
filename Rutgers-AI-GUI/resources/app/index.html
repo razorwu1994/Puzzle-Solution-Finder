@@ -25,7 +25,7 @@
   <option value="11">11</option>
     </select>
         <button onclick="puzzleInput()" style="height:20px;width:20vw" /> Generate Puzzle </br>
-        <button onclick="puzzleEvaluation()" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
+        <button onclick="puzzleEvaluation(true)" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
         <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
     </div>
@@ -47,6 +47,7 @@
     <div class="buttonDiv">
         <button onclick="basicHillClimb(`randwalk`)" style="height:20px;width:20vw">
              Hill Climb w/ Random Walking </button> probability (p): <input value='0' type="text" id="prob_downhill" />
+        <hr/>
     </div>
 
     <div class="buttonDiv">
@@ -54,13 +55,17 @@
             Simulated Annealing </button>
         <span/> initial temperature: <input type="text" id="init_temperature" required/>
         <span/> temperature decay rate: <input type="text" id="decayrate_temperature" required/>
-        <h4> put your iterations under basic hill climb input for simulated annealing </h4>
+        <h4 style="color:burlywood"> put your iterations under basic hill climb input for simulated annealing </h4>
+        <hr/>
     </div>
 
     <div class="buttonDiv">
-        <button onclick="" style="height:20px;width:20vw">
+        <button onclick="populationGenerating()" style="height:20px;width:20vw">
             Population implements GA </button>
-        
+        <span/> population size: <input type="text" id="population_size" required/>
+        <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
+        <span/> mutating probability: <input type="text" id="mutate_prob" required/>
+        <h4 style="color:darksalmon">puzzle size is selected on top</h4>
     </div>
 
     <div>
