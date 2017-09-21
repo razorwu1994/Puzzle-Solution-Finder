@@ -1,5 +1,50 @@
 var squareSize = 40;
 
+/**
+ * Helper function 1 for drawing puzzles in basicHillClimb
+ */
+var drawPuzzleHelper1 = function(r, c, xCor, yCor){
+    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    drawCell(xCor, yCor, dataMatrix[r][c], 0);
+    drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
+}
+
+/**
+ * Helper function 2 for drawing puzzles for hillClimbWithRestarts and tease
+ */
+var drawPuzzleHelper2 = function(r, c, xCor, yCor){
+    if (c == puzzleSideNumber - 1 && r == c) {
+        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0;
+        drawCell(xCor, yCor, 0, 0);
+    } else
+        drawCell(xCor, yCor, dataMatrix[r][c], 0);
+}
+
+/**
+ * Helper function 3 for drawing puzzles for puzzleInput
+ */
+var drawPuzzleHelper3 = function(r, c, xCor, yCor){
+    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    if (c == 0) {
+        dataMatrix[r][0] = unitNumber;
+    } else {
+        dataMatrix[r].push(unitNumber);
+    }
+
+    if (c == puzzleSideNumber - 1 && r == c) {
+        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+        drawCell(xCor, yCor, 0, 0);
+    } else
+        drawCell(xCor, yCor, unitNumber, 0);
+}
+
+/**
+ * Helper function 4 for drawing puzzles for puzzleEvaluation
+ */
+var drawPuzzleHelper4 = function(r, c, xCor, yCor){
+    let unitNumber = visualizingMatrix[r][c]
+    drawCell(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+}
 
 /**
  * 
@@ -13,6 +58,7 @@ var randomMaxlegalNumber = function(p,r,c){
     //console.log("row "+r+" col "+c)
     return r==(p-1)&&c==r?0:randomNumber(maxLegalJumpNumber(p, r, c))
 }
+
 var verifySelection = function(randSelectionGroup,x,y){
     let loopc=0;
     while(loopc<randSelectionGroup.length && randSelectionGroup.length!==0){
@@ -24,6 +70,7 @@ var verifySelection = function(randSelectionGroup,x,y){
     } 
     return true;
 }
+
 /**
  * range and a prob, will return the index that this prob located at corresponding interval
  * 
@@ -278,15 +325,17 @@ var fileInput = function(){
         }
     }
 }
+
 var cleanCanvas = function(offset) {
     var canvas = document.getElementById("dummy")
-    var ctx = canvas.getContext("2d"); 
+    var ctx = canvas.getContext("2d");
     var width = canvas.width,
         height = canvas.height
-        //console.log("w:"+width+"  h:"+height)
+    //console.log("w:"+width+"  h:"+height)
     ctx.clearRect(offset, 0, width, height);
 }
-var initializeMatrix = function() {
+
+var initializeMatrix = function () {
     visualizingMatrix = []
     visitMatrix = []
     for (var r = 0; r < puzzleSideNumber; r++) {
@@ -306,9 +355,8 @@ var initializeMatrix = function() {
 
 }
 
-
-var globalMathE = function(){
-    return Math.pow(2,Math.LOG2E);
+var globalMathE = function () {
+    return Math.pow(2, Math.LOG2E);
 }
 
 /**
@@ -324,27 +372,27 @@ var basicHillClimb = function(allowDownhill) {
     var itrInput = document.getElementById("climb_iteration").value;
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
-    var temperature,decayrate;
-    
-    if(allowDownhill==="basic"){//if basic p = 0
+    var temperature, decayrate;
+
+    if (allowDownhill === "basic") {//if basic p = 0
         p = 0;
-    }else{//if randwalk or anneal
-        if(allowDownhill==="randwalk"){
-        if(p<=1)
-        p = document.getElementById("prob_downhill").value;
-        else
-        p=1;
+    } else {//if randwalk or anneal
+        if (allowDownhill === "randwalk") {
+            if (p <= 1)
+                p = document.getElementById("prob_downhill").value;
+            else
+                p = 1;
         }
-        else if(allowDownhill==="anneal"){
-         p = 1;//p is dynamically changing after each iteration
-         temperature = document.getElementById("init_temperature").value; // probability of allowing a downhill move
-         decayrate = document.getElementById("decayrate_temperature").value; // probability of allowing a downhill move
-         if(decayrate>=1){
-             alert("please enter smaller than 1 value");
-             return;
-         }
+        else if (allowDownhill === "anneal") {
+            p = 1;//p is dynamically changing after each iteration
+            temperature = document.getElementById("init_temperature").value; // probability of allowing a downhill move
+            decayrate = document.getElementById("decayrate_temperature").value; // probability of allowing a downhill move
+            if (decayrate >= 1) {
+                alert("please enter smaller than 1 value");
+                return;
+            }
         }
-    }   
+    }
 
     var iteration = 0;
     while (iteration++ < itrInput) {
@@ -374,52 +422,39 @@ var basicHillClimb = function(allowDownhill) {
         dataMatrix[rRandom][cRandom] = unitNumber;
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
-        
         var postEval = puzzleEvaluation(true);
 
         //calculate the p if it is annealing
-        if(allowDownhill==="anneal"){
-            if(postEval<=prevEval)//downhill
+        if (allowDownhill === "anneal") {
+            if (postEval <= prevEval)//downhill
             {
-                p=Math.pow(globalMathE(),(postEval-prevEval)/temperature)
+                p = Math.pow(globalMathE(), (postEval - prevEval) / temperature)
             }
-            temperature *=decayrate//update the temprature
+            temperature *= decayrate//update the temprature
             //console.log("eval: "+postEval+" at " + temperature);
         }
         // Get a random number, x, to compare against p
-        // If x <= p, then allow downhill movement ????
         randNum = Math.random();
 
 
-        var k =prevEval;
+        var k = prevEval;
         //revert , when p is 1 , it is never reverted and downhill guaranteed
-        if(postEval < prevEval && randNum >= p) { 
+        if (postEval < prevEval && randNum >= p) {
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
             k = puzzleEvaluation(true);
         }
         //console.log("k  "+k+" temp at "+temperature)
-        
+
         cleanCanvas(0);
-        var xCor = 0,
-            yCor = 0;
-        squareSize = 40;
-        for (var r = 0; r < puzzleSideNumber; r++) {
-            yCor = r * squareSize;
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                xCor = c * squareSize;
-                drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
-                drawPuzzle(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
-            }
-            xCor = 0;
-        }
+        drawPuzzle(drawPuzzleHelper1);
     }
 
     // console.log("Evaluated value: " + postEval);
     // console.log("Matrix: " + dataMatrix);
 
-    if(postEval < prevEval){
+    if (postEval < prevEval) {
         return prevEval;
-    }else{
+    } else {
         return postEval;
     }
 }
@@ -428,7 +463,7 @@ var basicHillClimb = function(allowDownhill) {
  * Hill climb with random restarts by running several hill climbs and picking the best resulting puzzle
  * Must have a value in # of iterations and # of restarts in the GUI
  */
-var hillClimbWithRestarts = function() {
+var hillClimbWithRestarts = function () {
     var num_restarts = document.getElementById("num_restarts").value
     console.log("# restarts = " + num_restarts);
     var currEvalValue;
@@ -437,7 +472,7 @@ var hillClimbWithRestarts = function() {
 
     // For each restart iteration, generate a puzzle, hill climb with given # of iterations and compare against the best puzzle found so far
     var i;
-    for(i = 0; i < num_restarts; i += 1){
+    for (i = 0; i < num_restarts; i += 1) {
         console.log("restart " + i + ": ");
 
         // Generate puzzle and copy data matrix over
@@ -446,11 +481,11 @@ var hillClimbWithRestarts = function() {
         currPuzzle = JSON.parse(JSON.stringify(dataMatrix));
 
         // On first iteration, copy over matrix and its evaluated function value
-        if(i == 0){
+        if (i == 0) {
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
-        // Otherwise if the current value is better, replace the best matrix with the current one
-        }else if(currEvalValue > bestEvalValue){
+            // Otherwise if the current value is better, replace the best matrix with the current one
+        } else if (currEvalValue > bestEvalValue) {
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
         }
@@ -459,32 +494,18 @@ var hillClimbWithRestarts = function() {
     // Draw best matrix and its evaluation matrix to the screen
     dataMatrix = JSON.parse(JSON.stringify(bestPuzzle));
 
+    puzzleSideNumber = parseInt(document.getElementById("input").value)
     cleanCanvas(0);
-    puzzleSideNumber = parseInt(document.getElementById("input").value)    
     initializeMatrix();
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            xCor = c * squareSize;
-            if (c == puzzleSideNumber - 1 && r == c) {
-                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                drawPuzzle(xCor, yCor, 0, 0);
-            } else
-                drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
-        }
-        xCor = 0;
-    }
-
+    drawPuzzle(drawPuzzleHelper2);
     puzzleEvaluation(true);
 }
 
 
 
 
-var tease = function() {
-    document.getElementById("eval").disabled=false;
+var tease = function () {
+    document.getElementById("eval").disabled = false;
     // dataMatrix = [
     //     ["2", "2", "2", "4", "3"],
     //     ["2", "2", "3", "3", "3"],
@@ -500,31 +521,16 @@ var tease = function() {
         ["1", "1", "3", "2", "0"],
     ]; //fail example  example
 
+    puzzleSideNumber = 5;
+
     cleanCanvas(0);
-
-    puzzleSideNumber = 5
-
     initializeMatrix();
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            xCor = c * squareSize;
-            if (c == puzzleSideNumber - 1 && r == c) {
-                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                drawPuzzle(xCor, yCor, 0, 0);
-            } else
-                drawPuzzle(xCor, yCor, dataMatrix[r][c], 0);
-        }
-        xCor = 0;
-    }
-
+    drawPuzzle(drawPuzzleHelper2);
 }
 
 
 
-var puzzleCombo = function() {
+var puzzleCombo = function () {
     puzzleInput()
     puzzleEvaluation(true)
 }
@@ -532,7 +538,7 @@ var puzzleCombo = function() {
 /**
  * Generate a valid, random puzzle based on the chosen size
  */
-var puzzleInput = function() {
+var puzzleInput = function () {
     document.getElementById("eval").disabled = false;
     document.getElementById("k_value").innerText = ""
     document.getElementById("tree_section").innerText = ""
@@ -543,30 +549,7 @@ var puzzleInput = function() {
 
     puzzleSideNumber = parseInt(document.getElementById("input").value)
     initializeMatrix();
-
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-
-        dataMatrix.push([0])
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
-            if (c == 0) {
-                dataMatrix[r][0] = unitNumber;
-            } else {
-                dataMatrix[r].push(unitNumber);
-            }
-
-            xCor = c * squareSize;
-            if (c == puzzleSideNumber - 1 && r == c) {
-                dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                drawPuzzle(xCor, yCor, 0, 0);
-            } else
-                drawPuzzle(xCor, yCor, unitNumber, 0);
-        }
-        xCor = 0;
-    }
+    drawPuzzle(drawPuzzleHelper3, true)
 
     //console.log to show the matrix ===>
     //console.log(JSON.stringify(visitMatrix))
@@ -595,7 +578,7 @@ var puzzleEvaluation = function(drawORnot) {
     var barIndex = 0;
     var levelEnder = "";
 
-    var treePush = function(cord) {
+    var treePush = function (cord) {
         if ((cord.split(",")[0] === ("(" + (puzzleSideNumber - 1))) &&
             (cord.split(",")[1] === ((puzzleSideNumber - 1) + ")"))) {
             cord = "(G,G)"
@@ -622,8 +605,8 @@ var puzzleEvaluation = function(drawORnot) {
 
         if (dequedItem == levelEnder) //we found the last one of a level
             barFlag = true
-            // console.log("dequedItem" + dequedItem);
-            // console.log("depth : " + depth)
+        // console.log("dequedItem" + dequedItem);
+        // console.log("depth : " + depth)
 
         var pivot = dequedItem.split('+')
         var c = parseInt(pivot[0]) //c
@@ -671,21 +654,9 @@ var puzzleEvaluation = function(drawORnot) {
     //console.log(JSON.stringify(countOfzeroes))
 
     if(drawORnot){
-        var xCor = 0,
-            yCor = 0;
-        for (var r = 0; r < puzzleSideNumber; r++) {
-            yCor = r * squareSize;
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                let unitNumber = visualizingMatrix[r][c]
-                xCor = c * squareSize;
-                drawPuzzle(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
-            }
-            xCor = 0;
-        }
-        document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
-    
+        drawPuzzle(drawPuzzleHelper4);
+        document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))    
     }
-
 
     //this will print the matrix with no solution to goal cube
     if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X") {
@@ -701,12 +672,16 @@ var puzzleEvaluation = function(drawORnot) {
 
 }
 
-var maxLegalJumpNumber = function(Rmax, r, c) {
+var maxLegalJumpNumber = function (Rmax, r, c) {
     return Math.max(Rmax - r, r - 1, Rmax - c, c - 1);
 
 }
 
-var drawPuzzle = function(x, y, number, offset) {
+/**
+ * Draws a cell on the grid based on a position (x,y) and the offset given.
+ * Places the given number inside the cell.
+ */
+var drawCell = function (x, y, number, offset) {
     //console.log("("+x+","+y+")")
     var ctx = document.getElementById("dummy").getContext("2d");
     ctx.beginPath();
@@ -720,8 +695,36 @@ var drawPuzzle = function(x, y, number, offset) {
 
 }
 
-var randomNumber = function(max) {
+var randomNumber = function (max) {
     var temp = Math.random()
     return Math.floor(temp * (max)) == 0 ?
         Math.ceil(temp * (max)) : Math.floor(temp * (max))
+}
+
+/**
+ * Draws the entire puzzle.
+ * Make sure puzzleSideNumber is set before hand.
+ * 
+ * @param <function> drawingHelper helper function for customizing how the puzzle is drawn
+ * @param <boolean> option special flag for inputPuzzle()
+ */
+var drawPuzzle = function (drawingHelper, option=false) {
+    var xCor = 0,
+        yCor = 0;
+
+    squareSize = 40;
+    for (var r = 0; r < puzzleSideNumber; r++) {
+        yCor = r * squareSize;
+
+        if(option === true){
+            dataMatrix.push([0])            
+        }
+        
+        for (var c = 0; c < puzzleSideNumber; c++) {
+            xCor = c * squareSize;
+            
+            drawingHelper(r, c, xCor, yCor);
+        }
+        xCor = 0;
+    }
 }
