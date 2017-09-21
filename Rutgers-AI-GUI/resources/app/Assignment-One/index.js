@@ -1,6 +1,142 @@
 var squareSize = 40;
 
 
+
+
+var verifySelection = function(randSelectionGroup,x,y){
+    let loopc=0;
+    while(loopc<randSelectionGroup.length && randSelectionGroup.length!==0){
+        // console.log(randSelectionGroup[loopc].x.key + " | "+x)
+        // console.log(randSelectionGroup[loopc].y.key + " | "+y)
+        if(randSelectionGroup[loopc].x.key === x && randSelectionGroup[loopc].y.key === y)
+            return false;
+        loopc++;
+    } 
+    return true;
+}
+/**
+ * range and a prob, will return the index that this prob located at corresponding interval
+ * 
+ * @param {array} selectionRange 
+ * @param {number} probability 
+ * @return {number} index that this probability locate at
+ */
+var interval = function(selectionRange,probability){
+    let loopc=0;
+    while(loopc<selectionRange.length){
+        if(probability < parseFloat(selectionRange[loopc]))
+            break;
+        loopc++;
+    }
+    return loopc;
+}
+var populationGenerating = function(){
+    var popSize = document.getElementById("population_size").value;
+    var mutateProb = document.getElementById("mutate_prob").value;
+    var populationGroup = [];
+    
+    var fitnessGroup =[];//store eval, K in order, first value corresponds to first population in populationGroup
+    puzzleSideNumber = parseInt(document.getElementById("input").value)
+    
+    let loopcounter=0;
+    while(loopcounter++<popSize){
+        dataMatrix = [];
+        initializeMatrix();
+
+        for (var r = 0; r < puzzleSideNumber; r++) {
+                    dataMatrix.push([0])
+                    for (var c = 0; c < puzzleSideNumber; c++) {
+                        let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+                        if (c == 0) {
+                            dataMatrix[r][0] = unitNumber;
+                        } else {
+                            dataMatrix[r].push(unitNumber);
+                        }
+                        if (c == puzzleSideNumber - 1 && r == c) {
+                            dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                        } 
+                    }
+            }
+            let tempEval = puzzleEvaluation(false);
+            //this way to avoid negative fitness value
+            if(tempEval >= 0){
+            populationGroup.push(JSON.parse(JSON.stringify(dataMatrix)))//push fresh random puzzle into the group
+            fitnessGroup.push(puzzleEvaluation(false))//get each fitness value
+            }
+            else{
+                loopcounter--;
+            }
+    }
+
+    var selectionProbGroup=[];
+    var add = function(a,b){
+        return a + b;
+    }
+    let sum = fitnessGroup.reduce(add,0);
+    loopcounter=0;
+    while(loopcounter<popSize){
+        selectionProbGroup.push(parseFloat((fitnessGroup[loopcounter]/sum).toFixed(2)))
+        loopcounter++;
+    }
+    sum = selectionProbGroup.reduce(add,0);
+    
+    //this is because sometimes the sum of all cells are not adding up to 1, in this case
+    //just randomly pick one cell then make change to it in order for total to get 1
+    if(sum-1 !== 0){
+        let randCellOffset = Math.floor(Math.random()*popSize);
+        selectionProbGroup[randCellOffset] -= parseFloat(parseFloat(sum-1).toFixed(2))
+    }
+    //sum = parseFloat(selectionProbGroup.reduce(add,0).toFixed(1));
+    //var randItrTime = document.getElementById("randitr_time");//max times to run rand selection loop
+
+    //returns an array specifying range [1,10,50,100] means 4 interval,0-1,1-10,10-50,50-100 with right openning
+    var selectionRange = selectionProbGroup.map((indieProb,i)=>(
+        i==0 ?  indieProb : selectionProbGroup.reduce(function (a, b, c) {
+           // console.log(a+" "+b+" "+c+" i"+i)
+            if (c <= i) {
+                return a + b;
+            } else {
+                return a;
+            }
+        })
+    ));
+
+    // console.log(JSON.stringify(selectionProbGroup))
+    // console.log(JSON.stringify(selectionRange))
+    var randSelectionGroupSum = 0,randSelectionGroup=[];
+    loopcounter=0;
+
+    while(loopcounter<popSize && randSelectionGroupSum<(popSize*popSize-1)/2){
+        let x,y;
+        let individualP = Math.random();
+        x=interval(selectionRange,individualP)
+        individualP = Math.random();
+        y=interval(selectionRange,individualP)     
+        while(y===x){// if two selections get same index we have to pick different one
+            individualP = Math.random();
+            y=interval(selectionRange,individualP)
+        }
+        let temp;
+        if(x > y){//extra step to swap and make x always a smaller index
+            temp=x;
+            x = y;
+            y = temp;
+        }  
+        let tempObj;
+        tempObj={x:{key:x,value:populationGroup[x]},y:{key:y,value:populationGroup[y]}};
+
+        if(verifySelection(randSelectionGroup,x,y)){
+            randSelectionGroup.push(tempObj);
+            randSelectionGroupSum++;
+        }
+        console.log(JSON.stringify(randSelectionGroup))
+        loopcounter++;
+    }    
+
+
+}
+
+
 var fileInput = function(){  
     var temp = ''
 
@@ -119,7 +255,7 @@ var basicHillClimb = function(allowDownhill) {
     var iteration = 0;
     while (iteration++ < itrInput) {
 
-        var prevEval = puzzleEvaluation();
+        var prevEval = puzzleEvaluation(false);
         var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
         var rRandom = Math.floor(Math.random() * puzzleSideNumber)
@@ -145,7 +281,7 @@ var basicHillClimb = function(allowDownhill) {
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         
-        var postEval = puzzleEvaluation();
+        var postEval = puzzleEvaluation(true);
 
         //calculate the p if it is annealing
         if(allowDownhill==="anneal"){
@@ -165,7 +301,7 @@ var basicHillClimb = function(allowDownhill) {
         //revert , when p is 1 , it is never reverted and downhill guaranteed
         if(postEval < prevEval && randNum >= p) { 
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
-            k = puzzleEvaluation();
+            k = puzzleEvaluation(true);
         }
         //console.log("k  "+k+" temp at "+temperature)
         
@@ -247,7 +383,7 @@ var hillClimbWithRestarts = function() {
         xCor = 0;
     }
 
-    puzzleEvaluation();
+    puzzleEvaluation(true);
 }
 
 
@@ -296,7 +432,7 @@ var tease = function() {
 
 var puzzleCombo = function() {
     puzzleInput()
-    puzzleEvaluation()
+    puzzleEvaluation(true)
 }
 
 /**
@@ -343,7 +479,14 @@ var puzzleInput = function() {
     //console.log(JSON.stringify(dataMatrix))
     //console.log(JSON.stringify(visualizingMatrix))
 }
-var puzzleEvaluation = function() {
+
+/**
+ * 
+ * 
+ * @param {boolean} drawORnot determines whether draw the visualizing matrix or not
+ * @return {number} the fitness value for this k
+ */
+var puzzleEvaluation = function(drawORnot) {
     //console.log("=================================================")
     initializeMatrix();
     document.getElementById("eval").disabled = true;
@@ -432,29 +575,32 @@ var puzzleEvaluation = function() {
     }
     //console.log(JSON.stringify(countOfzeroes))
 
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            let unitNumber = visualizingMatrix[r][c]
-            xCor = c * squareSize;
-            drawPuzzle(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+    if(drawORnot){
+        var xCor = 0,
+            yCor = 0;
+        for (var r = 0; r < puzzleSideNumber; r++) {
+            yCor = r * squareSize;
+            for (var c = 0; c < puzzleSideNumber; c++) {
+                let unitNumber = visualizingMatrix[r][c]
+                xCor = c * squareSize;
+                drawPuzzle(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+            }
+            xCor = 0;
         }
-        xCor = 0;
+        document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
+    
     }
 
-    document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
 
     //this will print the matrix with no solution to goal cube
     if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X") {
-        document.getElementById("k_value").innerText = "K is " +
-            parseInt(countOfzeroes) * (-1)
-        console.log(JSON.stringify(dataMatrix))
+        drawORnot?document.getElementById("k_value").innerText = "K is " +
+            parseInt(countOfzeroes) * (-1):{}
+        //console.log("unsolvable case "+JSON.stringify(dataMatrix))
         return parseInt(countOfzeroes) * (-1) //this is the k
     } else {
-        document.getElementById("k_value").innerText = "K is " +
-            visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]
+        drawORnot?document.getElementById("k_value").innerText = "K is " +
+            visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]:{}
         return visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] //this is the k
     }
 
