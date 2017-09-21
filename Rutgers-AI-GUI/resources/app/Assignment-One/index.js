@@ -1,8 +1,18 @@
 var squareSize = 40;
 
 
-
-
+/**
+ * 
+ * 
+ * @param {number} puzzleSideNumber 
+ * @param {number} randomRow
+ * @param {number} randomCol 
+ * @return {number} random valid number
+ */
+var randomMaxlegalNumber = function(p,r,c){
+    //console.log("row "+r+" col "+c)
+    return r==(p-1)&&c==r?0:randomNumber(maxLegalJumpNumber(p, r, c))
+}
 var verifySelection = function(randSelectionGroup,x,y){
     let loopc=0;
     while(loopc<randSelectionGroup.length && randSelectionGroup.length!==0){
@@ -59,22 +69,34 @@ var populationGenerating = function(){
             }
             let tempEval = puzzleEvaluation(false);
             //this way to avoid negative fitness value
+            var is_same = (array1,array2)=>(array1.length == array2.length) && array1.every((element, index)=>(
+            JSON.stringify(element) === JSON.stringify(array2[index]) 
+            ))
+
             if(tempEval >= 0){
-            populationGroup.push(JSON.parse(JSON.stringify(dataMatrix)))//push fresh random puzzle into the group
-            fitnessGroup.push(puzzleEvaluation(false))//get each fitness value
+            // console.log(JSON.stringify(dataMatrix))
+            // console.log()
+            // console.log(populationGroup.length)
+            // console.log("----------------")
+                if(populationGroup.map((entry,index)=>(JSON.stringify(entry))).indexOf(JSON.stringify(dataMatrix))===-1)//if no duplicate puzzle
+                {
+                    populationGroup.push(JSON.parse(JSON.stringify(dataMatrix)))//push fresh random puzzle into the group
+                    fitnessGroup.push(puzzleEvaluation(false))//get each fitness value
+                }
             }
             else{
                 loopcounter--;
             }
     }
 
+    //console.log(populationGroup.length)
     var selectionProbGroup=[];
     var add = function(a,b){
         return a + b;
     }
     let sum = fitnessGroup.reduce(add,0);
     loopcounter=0;
-    while(loopcounter<popSize){
+    while(loopcounter<populationGroup.length){
         selectionProbGroup.push(parseFloat((fitnessGroup[loopcounter]/sum).toFixed(2)))
         loopcounter++;
     }
@@ -106,7 +128,7 @@ var populationGenerating = function(){
     var randSelectionGroupSum = 0,randSelectionGroup=[];
     loopcounter=0;
 
-    while(loopcounter<popSize && randSelectionGroupSum<(popSize*popSize-1)/2){
+    while(loopcounter<popSize && randSelectionGroupSum<(popSize*popSize-1)/2){//either iteration time ends or all groups are fit enough
         let x,y;
         let individualP = Math.random();
         x=interval(selectionRange,individualP)
@@ -125,14 +147,81 @@ var populationGenerating = function(){
         let tempObj;
         tempObj={x:{key:x,value:populationGroup[x]},y:{key:y,value:populationGroup[y]}};
 
-        if(verifySelection(randSelectionGroup,x,y)){
+        if(verifySelection(randSelectionGroup,x,y)){//if there is duplicate ,not going to take it
             randSelectionGroup.push(tempObj);
             randSelectionGroupSum++;
         }
-        console.log(JSON.stringify(randSelectionGroup))
         loopcounter++;
     }    
 
+    // console.log(JSON.stringify(randSelectionGroup.map((entry,i)=>(
+    //     entry.x.value +" and "+entry.y.value
+    // ))))
+    
+    //random select row, at least 1
+    var randomRow = function(maxRow){
+        let temp = Math.floor(Math.random()*maxRow)
+       return temp===0?1:temp;
+    };
+    
+    //console.log(randSelectionGroup.length)
+    var crossoverGroup=[]
+    loopcounter=0;
+    while(loopcounter<randSelectionGroup.length){
+        let randRow = randomRow(puzzleSideNumber);//decide until which row to crossover
+        let xPopulation = JSON.parse(JSON.stringify(randSelectionGroup[loopcounter].x.value)),
+            xPopulationCopy = JSON.parse(JSON.stringify(xPopulation)),
+            yPopulation = JSON.parse(JSON.stringify(randSelectionGroup[loopcounter].y.value)),
+            yPopulationCopy = JSON.parse(JSON.stringify(yPopulation))
+        
+        //splice is a mutator method,so have to use two copies, the return value of splice contains delete item
+        let xPartB=xPopulation.splice(randRow,puzzleSideNumber-randRow),
+            xPartA=xPopulationCopy.splice(0,randRow),
+            yPartB=yPopulation.splice(randRow,puzzleSideNumber-randRow),
+            yPartA=yPopulationCopy.splice(0,randRow)
+            //crossover
+            crossoverGroup.push([...xPartA,...yPartB])
+            crossoverGroup.push([...yPartA,...xPartB])
+            
+
+        loopcounter++;
+    }
+
+    //console.log(JSON.stringify(crossoverGroup))
+    
+    loopcounter=0;
+    //determine mutate or not
+    while(loopcounter<crossoverGroup.length){
+        let randmutateRow = randomRow(puzzleSideNumber);//decide until which row to crossover
+        if(Math.random()<mutateProb)//will mutate
+        {
+            // console.log("mutating")
+            // console.log("before "+JSON.stringify(crossoverGroup[loopcounter][randmutateRow]))
+            crossoverGroup[loopcounter][randmutateRow] = crossoverGroup[loopcounter][randmutateRow].map((entry,i)=>(
+                randomMaxlegalNumber(puzzleSideNumber,randmutateRow,i)
+            ))
+            //console.log("after "+JSON.stringify(crossoverGroup[loopcounter][randmutateRow]))
+            
+        }
+        loopcounter++;
+    }
+    
+    var assingK = function(ind){
+        dataMatrix=JSON.parse(JSON.stringify(ind));//copy each one
+        k=puzzleEvaluation(false);
+        //console.log(k);
+        return k; 
+    }
+    //console.log(JSON.stringify(crossoverGroup))    
+    let Kgroup = crossoverGroup.map((individual,index)=>(
+        assingK(individual)
+        )   
+    )
+    let finalK = Kgroup.reduce((a,b)=>a>b?a:b)
+    let finalIndex = Kgroup.indexOf(finalK)
+    //console.log(JSON.stringify(crossoverGroup[finalIndex]))
+    // console.log(JSON.stringify(Kgroup))
+    console.log(finalK)
 
 }
 
@@ -493,7 +582,7 @@ var puzzleInput = function() {
  */
 var puzzleEvaluation = function(drawORnot) {
     //console.log("=================================================")
-    console.log(JSON.stringify(dataMatrix))
+    //console.log(JSON.stringify(dataMatrix))
     initializeMatrix();
     document.getElementById("eval").disabled = true;
     var depth = 0;
