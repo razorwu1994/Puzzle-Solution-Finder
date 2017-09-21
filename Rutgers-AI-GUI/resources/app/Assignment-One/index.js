@@ -310,9 +310,9 @@ var fileInput = function(){
                 xCor = c * squareSize;
                 if (c == puzzleSideNumber - 1 && r == c) {
                     dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                    drawPuzzle(xCor, yCor, 0, 0);
+                    drawCell(xCor, yCor, 0, 0);
                 } else
-                    drawPuzzle(xCor, yCor, unitNumber, 0);
+                    drawCell(xCor, yCor, unitNumber, 0);
             }
             xCor = 0;
         }
