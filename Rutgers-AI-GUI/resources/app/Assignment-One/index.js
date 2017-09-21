@@ -1,5 +1,283 @@
 var squareSize = 40;
 
+
+/**
+ * 
+ * 
+ * @param {number} puzzleSideNumber 
+ * @param {number} randomRow
+ * @param {number} randomCol 
+ * @return {number} random valid number
+ */
+var randomMaxlegalNumber = function(p,r,c){
+    //console.log("row "+r+" col "+c)
+    return r==(p-1)&&c==r?0:randomNumber(maxLegalJumpNumber(p, r, c))
+}
+var verifySelection = function(randSelectionGroup,x,y){
+    let loopc=0;
+    while(loopc<randSelectionGroup.length && randSelectionGroup.length!==0){
+        // console.log(randSelectionGroup[loopc].x.key + " | "+x)
+        // console.log(randSelectionGroup[loopc].y.key + " | "+y)
+        if(randSelectionGroup[loopc].x.key === x && randSelectionGroup[loopc].y.key === y)
+            return false;
+        loopc++;
+    } 
+    return true;
+}
+/**
+ * range and a prob, will return the index that this prob located at corresponding interval
+ * 
+ * @param {array} selectionRange 
+ * @param {number} probability 
+ * @return {number} index that this probability locate at
+ */
+var interval = function(selectionRange,probability){
+    let loopc=0;
+    while(loopc<selectionRange.length){
+        if(probability < parseFloat(selectionRange[loopc]))
+            break;
+        loopc++;
+    }
+    return loopc;
+}
+var populationGenerating = function(){
+    var popSize = document.getElementById("population_size").value;
+    var mutateProb = document.getElementById("mutate_prob").value;
+    var populationGroup = [];
+    
+    var fitnessGroup =[];//store eval, K in order, first value corresponds to first population in populationGroup
+    puzzleSideNumber = parseInt(document.getElementById("input").value)
+    
+    let loopcounter=0;
+    while(loopcounter++<popSize){
+        dataMatrix = [];
+        initializeMatrix();
+
+        for (var r = 0; r < puzzleSideNumber; r++) {
+                    dataMatrix.push([0])
+                    for (var c = 0; c < puzzleSideNumber; c++) {
+                        let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+                        if (c == 0) {
+                            dataMatrix[r][0] = unitNumber;
+                        } else {
+                            dataMatrix[r].push(unitNumber);
+                        }
+                        if (c == puzzleSideNumber - 1 && r == c) {
+                            dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                        } 
+                    }
+            }
+            let tempEval = puzzleEvaluation(false);
+            //this way to avoid negative fitness value
+            var is_same = (array1,array2)=>(array1.length == array2.length) && array1.every((element, index)=>(
+            JSON.stringify(element) === JSON.stringify(array2[index]) 
+            ))
+
+            if(tempEval >= 0){
+            // console.log(JSON.stringify(dataMatrix))
+            // console.log()
+            // console.log(populationGroup.length)
+            // console.log("----------------")
+                if(populationGroup.map((entry,index)=>(JSON.stringify(entry))).indexOf(JSON.stringify(dataMatrix))===-1)//if no duplicate puzzle
+                {
+                    populationGroup.push(JSON.parse(JSON.stringify(dataMatrix)))//push fresh random puzzle into the group
+                    fitnessGroup.push(puzzleEvaluation(false))//get each fitness value
+                }
+            }
+            else{
+                loopcounter--;
+            }
+    }
+
+    //console.log(populationGroup.length)
+    var selectionProbGroup=[];
+    var add = function(a,b){
+        return a + b;
+    }
+    let sum = fitnessGroup.reduce(add,0);
+    loopcounter=0;
+    while(loopcounter<populationGroup.length){
+        selectionProbGroup.push(parseFloat((fitnessGroup[loopcounter]/sum).toFixed(2)))
+        loopcounter++;
+    }
+    sum = selectionProbGroup.reduce(add,0);
+    
+    //this is because sometimes the sum of all cells are not adding up to 1, in this case
+    //just randomly pick one cell then make change to it in order for total to get 1
+    if(sum-1 !== 0){
+        let randCellOffset = Math.floor(Math.random()*popSize);
+        selectionProbGroup[randCellOffset] -= parseFloat(parseFloat(sum-1).toFixed(2))
+    }
+    //sum = parseFloat(selectionProbGroup.reduce(add,0).toFixed(1));
+    //var randItrTime = document.getElementById("randitr_time");//max times to run rand selection loop
+
+    //returns an array specifying range [1,10,50,100] means 4 interval,0-1,1-10,10-50,50-100 with right openning
+    var selectionRange = selectionProbGroup.map((indieProb,i)=>(
+        i==0 ?  indieProb : selectionProbGroup.reduce(function (a, b, c) {
+           // console.log(a+" "+b+" "+c+" i"+i)
+            if (c <= i) {
+                return a + b;
+            } else {
+                return a;
+            }
+        })
+    ));
+
+    // console.log(JSON.stringify(selectionProbGroup))
+    // console.log(JSON.stringify(selectionRange))
+    var randSelectionGroupSum = 0,randSelectionGroup=[];
+    loopcounter=0;
+
+    while(loopcounter<popSize && randSelectionGroupSum<(popSize*popSize-1)/2){//either iteration time ends or all groups are fit enough
+        let x,y;
+        let individualP = Math.random();
+        x=interval(selectionRange,individualP)
+        individualP = Math.random();
+        y=interval(selectionRange,individualP)     
+        while(y===x){// if two selections get same index we have to pick different one
+            individualP = Math.random();
+            y=interval(selectionRange,individualP)
+        }
+        let temp;
+        if(x > y){//extra step to swap and make x always a smaller index
+            temp=x;
+            x = y;
+            y = temp;
+        }  
+        let tempObj;
+        tempObj={x:{key:x,value:populationGroup[x]},y:{key:y,value:populationGroup[y]}};
+
+        if(verifySelection(randSelectionGroup,x,y)){//if there is duplicate ,not going to take it
+            randSelectionGroup.push(tempObj);
+            randSelectionGroupSum++;
+        }
+        loopcounter++;
+    }    
+
+    // console.log(JSON.stringify(randSelectionGroup.map((entry,i)=>(
+    //     entry.x.value +" and "+entry.y.value
+    // ))))
+    
+    //random select row, at least 1
+    var randomRow = function(maxRow){
+        let temp = Math.floor(Math.random()*maxRow)
+       return temp===0?1:temp;
+    };
+    
+    //console.log(randSelectionGroup.length)
+    var crossoverGroup=[]
+    loopcounter=0;
+    while(loopcounter<randSelectionGroup.length){
+        let randRow = randomRow(puzzleSideNumber);//decide until which row to crossover
+        let xPopulation = JSON.parse(JSON.stringify(randSelectionGroup[loopcounter].x.value)),
+            xPopulationCopy = JSON.parse(JSON.stringify(xPopulation)),
+            yPopulation = JSON.parse(JSON.stringify(randSelectionGroup[loopcounter].y.value)),
+            yPopulationCopy = JSON.parse(JSON.stringify(yPopulation))
+        
+        //splice is a mutator method,so have to use two copies, the return value of splice contains delete item
+        let xPartB=xPopulation.splice(randRow,puzzleSideNumber-randRow),
+            xPartA=xPopulationCopy.splice(0,randRow),
+            yPartB=yPopulation.splice(randRow,puzzleSideNumber-randRow),
+            yPartA=yPopulationCopy.splice(0,randRow)
+            //crossover
+            crossoverGroup.push([...xPartA,...yPartB])
+            crossoverGroup.push([...yPartA,...xPartB])
+            
+
+        loopcounter++;
+    }
+
+    //console.log(JSON.stringify(crossoverGroup))
+    
+    loopcounter=0;
+    //determine mutate or not
+    while(loopcounter<crossoverGroup.length){
+        let randmutateRow = randomRow(puzzleSideNumber);//decide until which row to crossover
+        if(Math.random()<mutateProb)//will mutate
+        {
+            // console.log("mutating")
+            // console.log("before "+JSON.stringify(crossoverGroup[loopcounter][randmutateRow]))
+            crossoverGroup[loopcounter][randmutateRow] = crossoverGroup[loopcounter][randmutateRow].map((entry,i)=>(
+                randomMaxlegalNumber(puzzleSideNumber,randmutateRow,i)
+            ))
+            //console.log("after "+JSON.stringify(crossoverGroup[loopcounter][randmutateRow]))
+            
+        }
+        loopcounter++;
+    }
+    
+    var assingK = function(ind){
+        dataMatrix=JSON.parse(JSON.stringify(ind));//copy each one
+        k=puzzleEvaluation(false);
+        //console.log(k);
+        return k; 
+    }
+    //console.log(JSON.stringify(crossoverGroup))    
+    let Kgroup = crossoverGroup.map((individual,index)=>(
+        assingK(individual)
+        )   
+    )
+    let finalK = Kgroup.reduce((a,b)=>a>b?a:b)
+    let finalIndex = Kgroup.indexOf(finalK)
+    //console.log(JSON.stringify(crossoverGroup[finalIndex]))
+    // console.log(JSON.stringify(Kgroup))
+    console.log(finalK)
+
+}
+
+
+var fileInput = function(){  
+    dataMatrix=[];
+    var temp = ''
+    var file = document.getElementById("fileForUpload").files[0];
+    
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = function (evt) {
+            temp =evt.target.result.replace(/\r/g, "\n");
+            var tempArray = temp.split("\n").filter((t => t.length !=0));
+            puzzleSideNumber = tempArray.length;
+            cleanCanvas(0);
+            var xCor = 0,
+            yCor = 0;
+            for (var r = 0; r < puzzleSideNumber; r++) {
+            dataMatrix.push([0])
+            yCor = r * squareSize;
+            let charArray = tempArray[r].split(' ')
+            //console.log(JSON.stringify(charArray))
+            if(charArray.length !== tempArray.length){
+                alert("please upload a square like data");
+                return;
+            }
+            
+            for (var c = 0; c < puzzleSideNumber; c++) {
+                let unitNumber = charArray[c]
+                console.log(unitNumber)
+                if (c == 0) {
+                    dataMatrix[r][0] = unitNumber;
+                } else {
+                    dataMatrix[r].push(unitNumber);
+                }
+                
+                xCor = c * squareSize;
+                if (c == puzzleSideNumber - 1 && r == c) {
+                    dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                    drawPuzzle(xCor, yCor, 0, 0);
+                } else
+                    drawPuzzle(xCor, yCor, unitNumber, 0);
+            }
+            xCor = 0;
+        }
+    
+            // temp = evt.target.result.replace(/\r/g, "<br/>");
+            // document.getElementById("fileContents").innerHTML = temp;
+        }
+        reader.onerror = function (evt) {
+            document.getElementById("fileContents").innerHTML = "error reading file";
+        }
+    }
+}
 var cleanCanvas = function(offset) {
     var canvas = document.getElementById("dummy")
     var ctx = canvas.getContext("2d"); 
@@ -28,6 +306,11 @@ var initializeMatrix = function() {
 
 }
 
+
+var globalMathE = function(){
+    return Math.pow(2,Math.LOG2E);
+}
+
 /**
  * Take the current data matrix, then pick a random cell (besides the goal), and change it.
  * If the new matrix is better than the current matrix, keep the change.
@@ -36,9 +319,6 @@ var initializeMatrix = function() {
  * @param {string} allowDownhill determines whether downhill movement is allowed
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
-var globalMathE = function(){
-    return Math.pow(2,Math.LOG2E);
-}
 var basicHillClimb = function(allowDownhill) {
     console.log(allowDownhill)
     var itrInput = document.getElementById("climb_iteration").value;
@@ -69,7 +349,7 @@ var basicHillClimb = function(allowDownhill) {
     var iteration = 0;
     while (iteration++ < itrInput) {
 
-        var prevEval = puzzleEvaluation();
+        var prevEval = puzzleEvaluation(false);
         var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
         var rRandom = Math.floor(Math.random() * puzzleSideNumber)
@@ -95,7 +375,7 @@ var basicHillClimb = function(allowDownhill) {
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         
-        var postEval = puzzleEvaluation();
+        var postEval = puzzleEvaluation(true);
 
         //calculate the p if it is annealing
         if(allowDownhill==="anneal"){
@@ -115,7 +395,7 @@ var basicHillClimb = function(allowDownhill) {
         //revert , when p is 1 , it is never reverted and downhill guaranteed
         if(postEval < prevEval && randNum >= p) { 
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
-            k = puzzleEvaluation();
+            k = puzzleEvaluation(true);
         }
         //console.log("k  "+k+" temp at "+temperature)
         
@@ -197,7 +477,7 @@ var hillClimbWithRestarts = function() {
         xCor = 0;
     }
 
-    puzzleEvaluation();
+    puzzleEvaluation(true);
 }
 
 
@@ -246,7 +526,7 @@ var tease = function() {
 
 var puzzleCombo = function() {
     puzzleInput()
-    puzzleEvaluation()
+    puzzleEvaluation(true)
 }
 
 /**
@@ -293,8 +573,16 @@ var puzzleInput = function() {
     //console.log(JSON.stringify(dataMatrix))
     //console.log(JSON.stringify(visualizingMatrix))
 }
-var puzzleEvaluation = function() {
+
+/**
+ * 
+ * 
+ * @param {boolean} drawORnot determines whether draw the visualizing matrix or not
+ * @return {number} the fitness value for this k
+ */
+var puzzleEvaluation = function(drawORnot) {
     //console.log("=================================================")
+    //console.log(JSON.stringify(dataMatrix))
     initializeMatrix();
     document.getElementById("eval").disabled = true;
     var depth = 0;
@@ -382,29 +670,32 @@ var puzzleEvaluation = function() {
     }
     //console.log(JSON.stringify(countOfzeroes))
 
-    var xCor = 0,
-        yCor = 0;
-    for (var r = 0; r < puzzleSideNumber; r++) {
-        yCor = r * squareSize;
-        for (var c = 0; c < puzzleSideNumber; c++) {
-            let unitNumber = visualizingMatrix[r][c]
-            xCor = c * squareSize;
-            drawPuzzle(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+    if(drawORnot){
+        var xCor = 0,
+            yCor = 0;
+        for (var r = 0; r < puzzleSideNumber; r++) {
+            yCor = r * squareSize;
+            for (var c = 0; c < puzzleSideNumber; c++) {
+                let unitNumber = visualizingMatrix[r][c]
+                xCor = c * squareSize;
+                drawPuzzle(xCor, yCor, unitNumber, puzzleSideNumber * squareSize + 50);
+            }
+            xCor = 0;
         }
-        xCor = 0;
+        document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
+    
     }
 
-    document.getElementById("tree_section").innerText = "The tree data structure is :" + JSON.stringify(theTree.slice(0, theTree.length - 2))
 
     //this will print the matrix with no solution to goal cube
     if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X") {
-        document.getElementById("k_value").innerText = "K is " +
-            parseInt(countOfzeroes) * (-1)
-        console.log(JSON.stringify(dataMatrix))
+        drawORnot?document.getElementById("k_value").innerText = "K is " +
+            parseInt(countOfzeroes) * (-1):{}
+        //console.log("unsolvable case "+JSON.stringify(dataMatrix))
         return parseInt(countOfzeroes) * (-1) //this is the k
     } else {
-        document.getElementById("k_value").innerText = "K is " +
-            visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]
+        drawORnot?document.getElementById("k_value").innerText = "K is " +
+            visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]:{}
         return visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] //this is the k
     }
 
