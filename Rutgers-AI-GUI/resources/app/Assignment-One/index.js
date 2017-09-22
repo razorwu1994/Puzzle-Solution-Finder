@@ -87,6 +87,7 @@ var interval = function(selectionRange,probability){
     }
     return loopc;
 }
+
 var populationGenerating = function(){
     var popSize = document.getElementById("population_size").value;
     var mutateProb = document.getElementById("mutate_prob").value;
@@ -119,7 +120,7 @@ var populationGenerating = function(){
             var is_same = (array1,array2)=>(array1.length == array2.length) && array1.every((element, index)=>(
             JSON.stringify(element) === JSON.stringify(array2[index]) 
             ))
-
+            
             if(tempEval >= 0){
             // console.log(JSON.stringify(dataMatrix))
             // console.log()
@@ -270,6 +271,7 @@ var populationGenerating = function(){
     // console.log(JSON.stringify(Kgroup))
     console.log(finalK)
 
+    
 }
 
 
