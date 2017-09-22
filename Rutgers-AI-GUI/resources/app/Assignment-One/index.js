@@ -291,40 +291,40 @@ var fileInput = function(){
         var reader = new FileReader();
         reader.readAsBinaryString(file);
         reader.onload = function (evt) {
-            temp =evt.target.result.replace(/\r/g, "\n");
+        temp =evt.target.result.replace(/\r/g, "\n");
             var tempArray = temp.split("\n").filter((t => t.length !=0));
             puzzleSideNumber = tempArray.length;
             cleanCanvas(0);
             var xCor = 0,
             yCor = 0;
             for (var r = 0; r < puzzleSideNumber; r++) {
-            dataMatrix.push([0])
-            yCor = r * squareSize;
-            let charArray = tempArray[r].split(' ')
-            //console.log(JSON.stringify(charArray))
-            if(charArray.length !== tempArray.length){
-                alert("please upload a square like data");
-                return;
-            }
-            
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                let unitNumber = charArray[c]
-                console.log(unitNumber)
-                if (c == 0) {
-                    dataMatrix[r][0] = unitNumber;
-                } else {
-                    dataMatrix[r].push(unitNumber);
+                dataMatrix.push([0])
+                yCor = r * squareSize;
+                let charArray = tempArray[r].split(' ')
+                //console.log(JSON.stringify(charArray))
+                if(charArray.length !== tempArray.length){
+                    alert("please upload a square like data");
+                    return;
                 }
+            
+                for (var c = 0; c < puzzleSideNumber; c++) {
+                    let unitNumber = charArray[c]
+                    console.log(unitNumber)
+                    if (c == 0) {
+                        dataMatrix[r][0] = unitNumber;
+                    } else {
+                        dataMatrix[r].push(unitNumber);
+                    }
                 
-                xCor = c * squareSize;
-                if (c == puzzleSideNumber - 1 && r == c) {
-                    dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                    drawCell(xCor, yCor, 0, 0);
-                } else
-                    drawCell(xCor, yCor, unitNumber, 0);
+                    xCor = c * squareSize;
+                    if (c == puzzleSideNumber - 1 && r == c) {
+                        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                        drawCell(xCor, yCor, 0, 0);
+                    } else
+                        drawCell(xCor, yCor, unitNumber, 0);
+                }
+                xCor = 0;
             }
-            xCor = 0;
-        }
     
             // temp = evt.target.result.replace(/\r/g, "<br/>");
             // document.getElementById("fileContents").innerHTML = temp;
@@ -699,8 +699,8 @@ var drawCell = function (x, y, number, offset) {
     ctx.rect(offset + x, 0 + y, squareSize, squareSize);
     ctx.stroke();
 
-    ctx.font = "15px Georgia";
-    ctx.fillText(number, offset + x + squareSize / 2, 0 + y + squareSize / 2);
+    ctx.font = "30px Georgia";
+    ctx.fillText(number, offset + x + squareSize / 4, 0 + (y + 10) + squareSize / 2);
 
 }
 
