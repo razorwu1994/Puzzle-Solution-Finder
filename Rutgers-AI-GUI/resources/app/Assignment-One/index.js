@@ -264,12 +264,20 @@ var populationGenerating = function(){
         assignK(individual)
         )   
     )
+
     let finalK = Kgroup.reduce((a,b)=>a>b?a:b)
     let finalIndex = Kgroup.indexOf(finalK)
     //console.log(JSON.stringify(crossoverGroup[finalIndex]))
     // console.log(JSON.stringify(Kgroup))
     console.log(finalK)
 
+    // Transfer matrix with best K to data matrix
+    dataMatrix = JSON.parse(JSON.stringify(crossoverGroup[finalIndex]));
+
+    // Draw matrix to screen
+    cleanCanvas(0);
+    drawPuzzle(drawPuzzleHelper1);
+    document.getElementById("k_value").innerText = "K is " + finalK;
 }
 
 
@@ -722,7 +730,6 @@ var drawPuzzle = function (drawingHelper, option=false) {
         
         for (var c = 0; c < puzzleSideNumber; c++) {
             xCor = c * squareSize;
-            
             drawingHelper(r, c, xCor, yCor);
         }
         xCor = 0;
