@@ -253,7 +253,7 @@ var populationGenerating = function(){
         loopcounter++;
     }
     
-    var assingK = function(ind){
+    var assignK = function(ind){
         dataMatrix=JSON.parse(JSON.stringify(ind));//copy each one
         k=puzzleEvaluation(false);
         //console.log(k);
@@ -261,7 +261,7 @@ var populationGenerating = function(){
     }
     //console.log(JSON.stringify(crossoverGroup))    
     let Kgroup = crossoverGroup.map((individual,index)=>(
-        assingK(individual)
+        assignK(individual)
         )   
     )
     let finalK = Kgroup.reduce((a,b)=>a>b?a:b)
