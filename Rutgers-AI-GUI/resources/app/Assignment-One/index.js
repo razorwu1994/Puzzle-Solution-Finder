@@ -254,7 +254,7 @@ var populationGenerating = function(){
         loopcounter++;
     }
     
-    var assingK = function(ind){
+    var assignK = function(ind){
         dataMatrix=JSON.parse(JSON.stringify(ind));//copy each one
         k=puzzleEvaluation(false);
         //console.log(k);
@@ -262,16 +262,23 @@ var populationGenerating = function(){
     }
     //console.log(JSON.stringify(crossoverGroup))    
     let Kgroup = crossoverGroup.map((individual,index)=>(
-        assingK(individual)
+        assignK(individual)
         )   
     )
+
     let finalK = Kgroup.reduce((a,b)=>a>b?a:b)
     let finalIndex = Kgroup.indexOf(finalK)
     //console.log(JSON.stringify(crossoverGroup[finalIndex]))
     // console.log(JSON.stringify(Kgroup))
     console.log(finalK)
 
-    
+    // Transfer matrix with best K to data matrix
+    dataMatrix = JSON.parse(JSON.stringify(crossoverGroup[finalIndex]));
+
+    // Draw matrix to screen
+    cleanCanvas(0);
+    drawPuzzle(drawPuzzleHelper1);
+    document.getElementById("k_value").innerText = "K is " + finalK;
 }
 
 
@@ -312,9 +319,9 @@ var fileInput = function(){
                 xCor = c * squareSize;
                 if (c == puzzleSideNumber - 1 && r == c) {
                     dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                    drawPuzzle(xCor, yCor, 0, 0);
+                    drawCell(xCor, yCor, 0, 0);
                 } else
-                    drawPuzzle(xCor, yCor, unitNumber, 0);
+                    drawCell(xCor, yCor, unitNumber, 0);
             }
             xCor = 0;
         }
@@ -724,7 +731,6 @@ var drawPuzzle = function (drawingHelper, option=false) {
         
         for (var c = 0; c < puzzleSideNumber; c++) {
             xCor = c * squareSize;
-            
             drawingHelper(r, c, xCor, yCor);
         }
         xCor = 0;
