@@ -69,14 +69,18 @@
         <span/> population size: <input type="text" id="population_size" value='5'/>
         <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
         <span/> mutating probability: <input type="text" id="mutate_prob"  value='0.5'/><br/>
-        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1"/>        
+        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1"/><br/>  
+        <span/> computation time (seconds) to stop GA(even the time excess,a full iteration won't stop until it is finished) : 
+        <input type="text" id="ga_compTime" placeholder="default 1"/><br/>
+        <b id="k_comp" style="color:crimson"></b>       
         <h4 style="color:darksalmon">puzzle size is selected on top</h4>
     </div>
 
     <div>
-        <h3 id="k_value"></h3>
-        <h5 id="best_k"></h5>
+        <h5 id="k_value"></h5>
+        <h3 id="best_k"></h3>
         <p id="tree_section"></p>
+        <hr/>   
     </div>
     <div style="position:relative;top:2em">
         <canvas id="dummy" width="1600" height="900"></canvas>

@@ -6,7 +6,7 @@ var globalMaxK=0;
  * Helper function 1 for drawing puzzles in basicHillClimb
  */
 var drawPuzzleHelper1 = function(r, c, xCor, yCor){
-    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    //let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
     drawCell(xCor, yCor, dataMatrix[r][c], 0);
     drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
 }
@@ -93,18 +93,38 @@ var interval = function(selectionRange,probability){
 var genenaticAlgoLauncher = function(){
     var startDate = new Date();
     var endDate   = new Date();
+    var finalOPTmatrix=[];
+    var compTime = document.getElementById("ga_compTime").value?
+    parseFloat(document.getElementById("ga_compTime").value):1.0;//default 1 second
 
+    globalMaxK=0;
     document.getElementById("tree_section").innerText="";
+    document.getElementById("k_comp").innerText="";
+    
     let itr = document.getElementById("ga_iterations").value?document.getElementById("ga_iterations").value:1;
     let c=0;
     while(c<itr){
-        let tempMax = populationGenerating();
-        if(tempMax>globalMaxK){
-            globalMaxK =tempMax;
+        let tempObj = populationGenerating();
+        if(tempObj.finalK>globalMaxK){
+            globalMaxK =tempObj.finalK;
+            finalOPTmatrix = tempObj.finalMatrix;
             endDate= new Date();
         } 
-        c++
+        c++;
+        var curDate = new Date();
+        if((curDate.getTime() - startDate.getTime()) / 1000 > compTime){
+            document.getElementById("k_comp").innerText=
+            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+tempObj.finalK;            
+            break;
+        }
     }
+    // Transfer matrix with best K to data matrix
+    dataMatrix = finalOPTmatrix;
+    cleanCanvas(0);    
+    puzzleEvaluation(false);
+    // Draw matrix to screen
+    drawPuzzle(drawPuzzleHelper1);
+    document.getElementById("k_value").innerText = "optimized K is below";            
     document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000+" seconds to reach k :"+globalMaxK;
 }
 var populationGenerating = function(){
@@ -291,14 +311,7 @@ var populationGenerating = function(){
     // console.log(JSON.stringify(Kgroup))
     //console.log(finalK)
 
-    // Transfer matrix with best K to data matrix
-    dataMatrix = JSON.parse(JSON.stringify(crossoverGroup[finalIndex]));
-
-    // Draw matrix to screen
-    cleanCanvas(0);
-    drawPuzzle(drawPuzzleHelper1);
-    document.getElementById("k_value").innerText = "K is " + finalK;
-    return finalK;
+    return {finalK:finalK,finalMatrix:JSON.parse(JSON.stringify(crossoverGroup[finalIndex]))};
 }
 
 
@@ -469,7 +482,7 @@ var basicHillClimb = function(allowDownhill) {
         }
         // Get a random number, x, to compare against p
         randNum = Math.random();
-
+        
         var k = prevEval;
         //revert , when p is 1 , it is never reverted and downhill guaranteed
         if (postEval < prevEval && randNum >= p) {
@@ -493,7 +506,6 @@ var basicHillClimb = function(allowDownhill) {
     }
     cleanCanvas(0);
     drawPuzzle(drawPuzzleHelper1);
-    // console.log("Evaluated value: " + postEval);
     // console.log("Matrix: " + dataMatrix);
 
     if (postEval < prevEval) {
@@ -706,12 +718,12 @@ var puzzleEvaluation = function(drawORnot) {
 
     //this will print the matrix with no solution to goal cube
     if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X") {
-        drawORnot?document.getElementById("k_value").innerText = "K is " +
+        drawORnot?document.getElementById("k_value").innerText = "final K is " +
             parseInt(countOfzeroes) * (-1):{}
         //console.log("unsolvable case "+JSON.stringify(dataMatrix))
         return parseInt(countOfzeroes) * (-1) //this is the k
     } else {
-        drawORnot?document.getElementById("k_value").innerText = "K is " +
+        drawORnot?document.getElementById("k_value").innerText = "final K is " +
             visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]:{}
         return visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] //this is the k
     }
