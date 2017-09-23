@@ -442,11 +442,12 @@ var basicHillClimb = function(allowDownhill) {
         }
     }
 
+    var report = document.getElementById("report_area");
+    report.innerText=""
+    
     var iteration = 0;
     while (iteration++ < itrInput) {
-
         var prevEval = puzzleEvaluation(false);
-        
         var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
         var rRandom = Math.floor(Math.random() * puzzleSideNumber)
@@ -471,6 +472,8 @@ var basicHillClimb = function(allowDownhill) {
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         var postEval = puzzleEvaluation(true);
 
+        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+postEval:
+        {}
                 //calculate the p if it is annealing
         if (allowDownhill === "anneal") {
             if (postEval <= prevEval)//downhill
@@ -530,11 +533,14 @@ var hillClimbWithRestarts = function () {
     var bestPuzzle = [];
     var bestEvalValue;
 
+    var report = document.getElementById("report_area");
+    report.innerText=""
+    
     // For each restart iteration, generate a puzzle, hill climb with given # of iterations and compare against the best puzzle found so far
     var i;
     for (i = 0; i < num_restarts; i += 1) {
         //console.log("restart " + i + ": ");
-
+        report.innerText+="# "+i+" restart -->"
         // Generate puzzle and copy data matrix over
         puzzleInput();
         var currEvalValue = basicHillClimb();
