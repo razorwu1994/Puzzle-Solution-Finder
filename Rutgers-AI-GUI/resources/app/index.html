@@ -18,16 +18,20 @@
         Puzzle size
         <select id="input">
           <!-- for easy testing ,you can uncomment this -->
-            <option value="3">3</option>
-  <option value="5">5</option>
-  <option value="7">7</option>
-  <option value="9">9</option>
-  <option value="11">11</option>
-    </select>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="7">7</option>
+                    <option value="9">9</option>
+                    <option value="11">11</option>
+        </select>
         <button onclick="puzzleInput()" style="height:20px;width:20vw" /> Generate Puzzle </br>
         <button onclick="puzzleEvaluation(true)" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
         <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
+    </div>
+    <div>
+        <span style="color:dodgerblue">Type the M value to report K value every M iterations: </span>
+        <input type="text" id="itrToReport"  placeholder="default M is 5"/>
     </div>
     <div class="buttonDiv">     
         <input type="file" id="fileForUpload"/><b>be sure your file is exactly in format as 1 2 3 \r\n 1 2 3</b>
@@ -53,25 +57,32 @@
     <div class="buttonDiv">
         <button onclick="basicHillClimb(`anneal`)" style="height:20px;width:20vw">
             Simulated Annealing </button>
-        <span/> initial temperature: <input type="text" id="init_temperature" required/>
-        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" required/>
+        <span/> initial temperature: <input type="text" id="init_temperature" value='0'/>
+        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" value='0.5'/>
         <h4 style="color:burlywood"> put your iterations under basic hill climb input for simulated annealing </h4>
         <hr/>
     </div>
 
     <div class="buttonDiv">
-        <button onclick="populationGenerating()" style="height:20px;width:20vw">
+        <button onclick="genenaticAlgoLauncher()" style="height:20px;width:20vw">
             Genetic Algorithm </button>
-        <span/> population size: <input type="text" id="population_size" required/>
+        <span/> population size: <input type="text" id="population_size" value='5'/>
         <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
-        <span/> mutating probability: <input type="text" id="mutate_prob" required/>
+        <span/> mutating probability: <input type="text" id="mutate_prob"  value='0.5'/><br/>
+        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1"/><br/>  
+        <span/> computation time (seconds) to stop GA(even the time excess,a full iteration won't stop until it is finished) : 
+        <input type="text" id="ga_compTime" placeholder="default 1"/><br/>
+        <b id="k_comp" style="color:crimson"></b>       
         <h4 style="color:darksalmon">puzzle size is selected on top</h4>
+        <hr/>           
     </div>
 
     <div>
-        <h3 id="k_value"></h3>
-        </br>
+        <h5 id="report_area"></h5>
+        <h5 id="k_value"></h5>
+        <h3 id="best_k"></h3>
         <p id="tree_section"></p>
+        <hr/>   
     </div>
     <div style="position:relative;top:2em">
         <canvas id="dummy" width="1600" height="900"></canvas>

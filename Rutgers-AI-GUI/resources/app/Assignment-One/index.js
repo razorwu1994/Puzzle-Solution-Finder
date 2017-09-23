@@ -1,10 +1,12 @@
 var squareSize = 40;
+var itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+var globalMaxK=0;
 
 /**
  * Helper function 1 for drawing puzzles in basicHillClimb
  */
 var drawPuzzleHelper1 = function(r, c, xCor, yCor){
-    let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
+    //let unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, r, c))
     drawCell(xCor, yCor, dataMatrix[r][c], 0);
     drawCell(xCor, yCor, visualizingMatrix[r][c], squareSize * puzzleSideNumber + 50);
 }
@@ -88,6 +90,43 @@ var interval = function(selectionRange,probability){
     return loopc;
 }
 
+var genenaticAlgoLauncher = function(){
+    var startDate = new Date();
+    var endDate   = new Date();
+    var finalOPTmatrix=[];
+    var compTime = document.getElementById("ga_compTime").value?
+    parseFloat(document.getElementById("ga_compTime").value):1.0;//default 1 second
+
+    globalMaxK=0;
+    document.getElementById("tree_section").innerText="";
+    document.getElementById("k_comp").innerText="";
+    
+    let itr = document.getElementById("ga_iterations").value?document.getElementById("ga_iterations").value:1;
+    let c=0;
+    while(c<itr){
+        let tempObj = populationGenerating();
+        if(tempObj.finalK>globalMaxK){
+            globalMaxK =tempObj.finalK;
+            finalOPTmatrix = tempObj.finalMatrix;
+            endDate= new Date();
+        } 
+        c++;
+        var curDate = new Date();
+        if((curDate.getTime() - startDate.getTime()) / 1000 > compTime){
+            document.getElementById("k_comp").innerText=
+            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+tempObj.finalK;            
+            break;
+        }
+    }
+    // Transfer matrix with best K to data matrix
+    dataMatrix = finalOPTmatrix;
+    cleanCanvas(0);    
+    puzzleEvaluation(false);
+    // Draw matrix to screen
+    drawPuzzle(drawPuzzleHelper1);
+    document.getElementById("k_value").innerText = "optimized K is below";            
+    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000+" seconds to reach k :"+globalMaxK;
+}
 var populationGenerating = function(){
     var popSize = document.getElementById("population_size").value;
     var mutateProb = document.getElementById("mutate_prob").value;
@@ -270,15 +309,9 @@ var populationGenerating = function(){
     let finalIndex = Kgroup.indexOf(finalK)
     //console.log(JSON.stringify(crossoverGroup[finalIndex]))
     // console.log(JSON.stringify(Kgroup))
-    console.log(finalK)
+    //console.log(finalK)
 
-    // Transfer matrix with best K to data matrix
-    dataMatrix = JSON.parse(JSON.stringify(crossoverGroup[finalIndex]));
-
-    // Draw matrix to screen
-    cleanCanvas(0);
-    drawPuzzle(drawPuzzleHelper1);
-    document.getElementById("k_value").innerText = "K is " + finalK;
+    return {finalK:finalK,finalMatrix:JSON.parse(JSON.stringify(crossoverGroup[finalIndex]))};
 }
 
 
@@ -291,40 +324,41 @@ var fileInput = function(){
         var reader = new FileReader();
         reader.readAsBinaryString(file);
         reader.onload = function (evt) {
-            temp =evt.target.result.replace(/\r/g, "\n");
+        temp =evt.target.result.replace(/\r/g, "\n");
             var tempArray = temp.split("\n").filter((t => t.length !=0));
-            puzzleSideNumber = tempArray.length;
+            puzzleSideNumber = tempArray[0];
+            tempArray = tempArray.slice(1,tempArray.length)
             cleanCanvas(0);
             var xCor = 0,
             yCor = 0;
             for (var r = 0; r < puzzleSideNumber; r++) {
-            dataMatrix.push([0])
-            yCor = r * squareSize;
-            let charArray = tempArray[r].split(' ')
-            //console.log(JSON.stringify(charArray))
-            if(charArray.length !== tempArray.length){
-                alert("please upload a square like data");
-                return;
-            }
-            
-            for (var c = 0; c < puzzleSideNumber; c++) {
-                let unitNumber = charArray[c]
-                console.log(unitNumber)
-                if (c == 0) {
-                    dataMatrix[r][0] = unitNumber;
-                } else {
-                    dataMatrix[r].push(unitNumber);
+                dataMatrix.push([0])
+                yCor = r * squareSize;
+                let charArray = tempArray[r].split(' ')
+                //console.log(JSON.stringify(charArray))
+                if(charArray.length !== tempArray.length){
+                    alert("please upload a square like data");
+                    return;
                 }
+            
+                for (var c = 0; c < puzzleSideNumber; c++) {
+                    let unitNumber = charArray[c]
+                    console.log(unitNumber)
+                    if (c == 0) {
+                        dataMatrix[r][0] = unitNumber;
+                    } else {
+                        dataMatrix[r].push(unitNumber);
+                    }
                 
-                xCor = c * squareSize;
-                if (c == puzzleSideNumber - 1 && r == c) {
-                    dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-                    drawCell(xCor, yCor, 0, 0);
-                } else
-                    drawCell(xCor, yCor, unitNumber, 0);
+                    xCor = c * squareSize;
+                    if (c == puzzleSideNumber - 1 && r == c) {
+                        dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
+                        drawCell(xCor, yCor, 0, 0);
+                    } else
+                        drawCell(xCor, yCor, unitNumber, 0);
+                }
+                xCor = 0;
             }
-            xCor = 0;
-        }
     
             // temp = evt.target.result.replace(/\r/g, "<br/>");
             // document.getElementById("fileContents").innerHTML = temp;
@@ -377,7 +411,12 @@ var globalMathE = function () {
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
 var basicHillClimb = function(allowDownhill) {
-    console.log(allowDownhill)
+    //console.log(allowDownhill)
+    globalMaxK =0;
+    var startDate = new Date();
+    // declare time
+    var endDate   = new Date();
+
     var itrInput = document.getElementById("climb_iteration").value;
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
@@ -403,9 +442,11 @@ var basicHillClimb = function(allowDownhill) {
         }
     }
 
+    var report = document.getElementById("report_area");
+    report.innerText=""
+    
     var iteration = 0;
     while (iteration++ < itrInput) {
-
         var prevEval = puzzleEvaluation(false);
         var prevMatrix = JSON.parse(JSON.stringify(dataMatrix))
 
@@ -421,19 +462,19 @@ var basicHillClimb = function(allowDownhill) {
         while (unitNumber === dataMatrix[rRandom][cRandom]) {
             unitNumber = randomNumber(maxLegalJumpNumber(puzzleSideNumber, rRandom, cRandom))
             if (count++ > 5) {
-                console.log("no more options")
+                //console.log("no more options")
                 break;
             }
         }
-
-
 
         dataMatrix[rRandom][cRandom] = unitNumber;
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         var postEval = puzzleEvaluation(true);
 
-        //calculate the p if it is annealing
+        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+postEval:
+        {}
+                //calculate the p if it is annealing
         if (allowDownhill === "anneal") {
             if (postEval <= prevEval)//downhill
             {
@@ -444,21 +485,30 @@ var basicHillClimb = function(allowDownhill) {
         }
         // Get a random number, x, to compare against p
         randNum = Math.random();
-
-
+        
         var k = prevEval;
         //revert , when p is 1 , it is never reverted and downhill guaranteed
         if (postEval < prevEval && randNum >= p) {
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
-            k = puzzleEvaluation(true);
+            k = puzzleEvaluation(true);            
+        }
+        else if(postEval >= globalMaxK){
+            endDate  = new Date();  
+            globalMaxK = postEval;   
+            //console.log(prevEval+" "+postEval);
         }
         //console.log("k  "+k+" temp at "+temperature)
-
-        cleanCanvas(0);
-        drawPuzzle(drawPuzzleHelper1);
     }
-
-    // console.log("Evaluated value: " + postEval);
+    if (allowDownhill === "basic" )  {
+        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
+        +" seconds to reach k :"+globalMaxK +" and by the way the max is the same as final result k";
+    }
+    else{
+        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
+        +" seconds to reach k :"+globalMaxK;
+    }
+    cleanCanvas(0);
+    drawPuzzle(drawPuzzleHelper1);
     // console.log("Matrix: " + dataMatrix);
 
     if (postEval < prevEval) {
@@ -473,17 +523,24 @@ var basicHillClimb = function(allowDownhill) {
  * Must have a value in # of iterations and # of restarts in the GUI
  */
 var hillClimbWithRestarts = function () {
+    var startDate = new Date();
+    // declare time
+    var endDate   = new Date();
+
     var num_restarts = document.getElementById("num_restarts").value
-    console.log("# restarts = " + num_restarts);
+    //console.log("# restarts = " + num_restarts);
     var currEvalValue;
     var bestPuzzle = [];
     var bestEvalValue;
 
+    var report = document.getElementById("report_area");
+    report.innerText=""
+    
     // For each restart iteration, generate a puzzle, hill climb with given # of iterations and compare against the best puzzle found so far
     var i;
     for (i = 0; i < num_restarts; i += 1) {
-        console.log("restart " + i + ": ");
-
+        //console.log("restart " + i + ": ");
+        report.innerText+="# "+i+" restart -->"
         // Generate puzzle and copy data matrix over
         puzzleInput();
         var currEvalValue = basicHillClimb();
@@ -493,13 +550,16 @@ var hillClimbWithRestarts = function () {
         if (i == 0) {
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
+            endDate = new Date();
             // Otherwise if the current value is better, replace the best matrix with the current one
         } else if (currEvalValue > bestEvalValue) {
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
+            endDate = new Date();
         }
     }
-
+    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
+    +" seconds to reach k :"+bestEvalValue +" and by the way the max is the same as final result k";
     // Draw best matrix and its evaluation matrix to the screen
     dataMatrix = JSON.parse(JSON.stringify(bestPuzzle));
 
@@ -509,9 +569,6 @@ var hillClimbWithRestarts = function () {
     drawPuzzle(drawPuzzleHelper2);
     puzzleEvaluation(true);
 }
-
-
-
 
 var tease = function () {
     document.getElementById("eval").disabled = false;
@@ -536,8 +593,6 @@ var tease = function () {
     initializeMatrix();
     drawPuzzle(drawPuzzleHelper2);
 }
-
-
 
 var puzzleCombo = function () {
     puzzleInput()
@@ -669,12 +724,12 @@ var puzzleEvaluation = function(drawORnot) {
 
     //this will print the matrix with no solution to goal cube
     if (visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] === "X") {
-        drawORnot?document.getElementById("k_value").innerText = "K is " +
+        drawORnot?document.getElementById("k_value").innerText = "final K is " +
             parseInt(countOfzeroes) * (-1):{}
         //console.log("unsolvable case "+JSON.stringify(dataMatrix))
         return parseInt(countOfzeroes) * (-1) //this is the k
     } else {
-        drawORnot?document.getElementById("k_value").innerText = "K is " +
+        drawORnot?document.getElementById("k_value").innerText = "final K is " +
             visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1]:{}
         return visualizingMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] //this is the k
     }
@@ -699,8 +754,8 @@ var drawCell = function (x, y, number, offset) {
     ctx.rect(offset + x, 0 + y, squareSize, squareSize);
     ctx.stroke();
 
-    ctx.font = "15px Georgia";
-    ctx.fillText(number, offset + x + squareSize / 2, 0 + y + squareSize / 2);
+    ctx.font = "30px Georgia";
+    ctx.fillText(number, offset + x + squareSize / 4, 0 + (y + 10) + squareSize / 2);
 
 }
 
