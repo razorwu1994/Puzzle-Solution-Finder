@@ -444,7 +444,7 @@ var basicHillClimb = function(allowDownhill) {
     }
 
     var report = document.getElementById("report_area");
-    report.innerText=""
+    // temp report.innerText=""
     
     var iteration = 0;
     while (iteration++ < itrInput) {
@@ -473,8 +473,7 @@ var basicHillClimb = function(allowDownhill) {
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         var postEval = puzzleEvaluation(true);
 
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+postEval:
-        {}
+
                 //calculate the p if it is annealing
         if (allowDownhill === "anneal") {
             if (postEval <= prevEval)//downhill
@@ -498,8 +497,17 @@ var basicHillClimb = function(allowDownhill) {
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
+        /*
+        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
+        {}
+        */
+
+        // Temp reporting (without iteration #) to make getting statistics easier
+        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+k:
+        {}
         //console.log("k  "+k+" temp at "+temperature)
     }
+    report.innerText += "\n"; //temp    
     if (allowDownhill === "basic" )  {
         document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
         +" seconds to reach k :"+globalMaxK +" and by the way the max is the same as final result k";
@@ -516,6 +524,17 @@ var basicHillClimb = function(allowDownhill) {
         return prevEval;
     } else {
         return postEval;
+    }
+}
+
+/**
+ * Run hill climb 50 times and write the resulting k's found into a file
+ */
+var getBasicHillClimbStats = function() {
+    var i;
+    for(i = 0; i < 50; i++){
+        puzzleInput();
+        basicHillClimb('basic');
     }
 }
 
