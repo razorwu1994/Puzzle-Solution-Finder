@@ -472,8 +472,7 @@ var basicHillClimb = function(allowDownhill) {
         cleanCanvas(squareSize * puzzleSideNumber + 50);
         var postEval = puzzleEvaluation(true);
 
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+postEval:
-        {}
+
                 //calculate the p if it is annealing
         if (allowDownhill === "anneal") {
             if (postEval <= prevEval)//downhill
@@ -497,6 +496,8 @@ var basicHillClimb = function(allowDownhill) {
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
+        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
+        {}
         //console.log("k  "+k+" temp at "+temperature)
     }
     if (allowDownhill === "basic" )  {
