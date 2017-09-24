@@ -25,7 +25,7 @@ Func Example()
 			;
 		 ;EndIf
 
-		 MouseClick("left",179,103)
+		 MouseClick("left",226,173)
 	  Until _Timer_Diff($hStarttime) > 100000000000000000;
 EndFunc   ;==>Example
 
