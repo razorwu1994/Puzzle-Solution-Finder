@@ -421,6 +421,7 @@ var basicHillClimb = function(allowDownhill) {
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
     var temperature, decayrate;
+    var itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;    
 
     if (allowDownhill === "basic") {//if basic p = 0
         p = 0;
