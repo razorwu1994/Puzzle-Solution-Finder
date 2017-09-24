@@ -444,7 +444,7 @@ var basicHillClimb = function(allowDownhill) {
     }
 
     var report = document.getElementById("report_area");
-    // temp report.innerText=""
+    report.innerText=""
     
     var iteration = 0;
     while (iteration++ < itrInput) {
@@ -497,14 +497,10 @@ var basicHillClimb = function(allowDownhill) {
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
-        /*
+
         iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
         {}
-        */
 
-        // Temp reporting (without iteration #) to make getting statistics easier
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+k:
-        {}
         //console.log("k  "+k+" temp at "+temperature)
     }
     report.innerText += "\n"; //temp    
