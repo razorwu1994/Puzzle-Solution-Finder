@@ -24,9 +24,9 @@ var drawPuzzleHelper1 = function(r, c, xCor, yCor){
 var drawPuzzleHelper2 = function(r, c, xCor, yCor){
     if (c == puzzleSideNumber - 1 && r == c) {
         dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0;
-        //drawCell(xCor, yCor, 0, 0);
+        drawCell(xCor, yCor, 0, 0);
     } else{}
-        //drawCell(xCor, yCor, dataMatrix[r][c], 0);
+        drawCell(xCor, yCor, dataMatrix[r][c], 0);
 }
 
 /**
@@ -42,9 +42,10 @@ var drawPuzzleHelper3 = function(r, c, xCor, yCor){
 
     if (c == puzzleSideNumber - 1 && r == c) {
         dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-        //drawCell(xCor, yCor, 0, 0);
-    } else{}
-        //drawCell(xCor, yCor, unitNumber, 0);
+        drawCell(xCor, yCor, 0, 0);
+    } else{
+        drawCell(xCor, yCor, unitNumber, 0);
+    }
 }
 
 /**
@@ -358,7 +359,7 @@ var fileInput = function(){
             
                 for (var c = 0; c < puzzleSideNumber; c++) {
                     let unitNumber = charArray[c]
-                    console.log(unitNumber)
+                    //console.log(unitNumber)
                     if (c == 0) {
                         dataMatrix[r][0] = unitNumber;
                     } else {
@@ -540,8 +541,8 @@ var basicHillClimb = function(allowDownhill) {
         document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime())
         +" ms to reach k :"+globalMaxK;
     }
-    // cleanCanvas(0);
-    // drawPuzzle(drawPuzzleHelper1);
+    cleanCanvas(0);
+    drawPuzzle(drawPuzzleHelper1);
     // console.log("Matrix: " + dataMatrix);
 
     if (postEval < prevEval) {
@@ -645,24 +646,21 @@ var tease = function () {
 }
 
 var puzzleCombo = function () {
-    grandGlobalMax=0;
     var run = document.getElementById("run").value
     let c = 0
     while(c++<run){
-    puzzleInput();
-    basicHillClimb("randwalk");
-    report+="\n"    
-    fs.appendFile("./report.csv", report, (err) => {
+    basicHillClimb("basic");
+    }
+
+
+    fs.appendFile("./report.txt", JSON.stringify(dataMatrix)+"\n", (err) => {
         if (err) {
             console.error(err);
             return;
         };
         console.log("File has been saved");
     });
-
-
-    }
-
+    
 
 }
 
@@ -676,7 +674,7 @@ var puzzleInput = function () {
     dataMatrix = [];
     theTree = [];
 
-    //cleanCanvas(0);
+    cleanCanvas(0);
 
     puzzleSideNumber = parseInt(document.getElementById("input").value)
     initializeMatrix();
