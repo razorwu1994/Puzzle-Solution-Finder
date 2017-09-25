@@ -1,6 +1,13 @@
+var fs = require("fs");
+var report="";
+
 var squareSize = 40;
-var itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+var itrToReport = 5;
 var globalMaxK=0;
+var compTime = 1.0;
+var grandGlobalMax;
+
+var dataSet=0,dataCount,dataAvg;
 
 /**
  * Helper function 1 for drawing puzzles in basicHillClimb
@@ -17,9 +24,9 @@ var drawPuzzleHelper1 = function(r, c, xCor, yCor){
 var drawPuzzleHelper2 = function(r, c, xCor, yCor){
     if (c == puzzleSideNumber - 1 && r == c) {
         dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0;
-        drawCell(xCor, yCor, 0, 0);
-    } else
-        drawCell(xCor, yCor, dataMatrix[r][c], 0);
+        //drawCell(xCor, yCor, 0, 0);
+    } else{}
+        //drawCell(xCor, yCor, dataMatrix[r][c], 0);
 }
 
 /**
@@ -35,9 +42,9 @@ var drawPuzzleHelper3 = function(r, c, xCor, yCor){
 
     if (c == puzzleSideNumber - 1 && r == c) {
         dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-        drawCell(xCor, yCor, 0, 0);
-    } else
-        drawCell(xCor, yCor, unitNumber, 0);
+        //drawCell(xCor, yCor, 0, 0);
+    } else{}
+        //drawCell(xCor, yCor, unitNumber, 0);
 }
 
 /**
@@ -91,13 +98,15 @@ var interval = function(selectionRange,probability){
 }
 
 var genenaticAlgoLauncher = function(){
+
     var startDate = new Date();
     var endDate   = new Date();
     var finalOPTmatrix=[];
-    var compTime = document.getElementById("ga_compTime").value?
+    
+    compTime = document.getElementById("ga_compTime").value?
     parseFloat(document.getElementById("ga_compTime").value):1.0;//default 1 second
 
-    globalMaxK=0;
+    globalMaxK =0;    
     document.getElementById("tree_section").innerText="";
     document.getElementById("k_comp").innerText="";
     
@@ -111,19 +120,25 @@ var genenaticAlgoLauncher = function(){
             endDate= new Date();
         } 
         c++;
+
         var curDate = new Date();
         if((curDate.getTime() - startDate.getTime()) / 1000 > compTime){
             document.getElementById("k_comp").innerText=
-            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+tempObj.finalK;            
+            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+tempObj.finalK 
+            //console.log("stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+tempObj.finalK );  
+            dataCount=1;            
             break;
         }
     }
     // Transfer matrix with best K to data matrix
     dataMatrix = finalOPTmatrix;
-    cleanCanvas(0);    
-    puzzleEvaluation(false);
+    dataSet+=globalMaxK;
+    if(grandGlobalMax<globalMaxK)grandGlobalMax=globalMaxK;
+
+    //cleanCanvas(0);    
+    //puzzleEvaluation(false);
     // Draw matrix to screen
-    drawPuzzle(drawPuzzleHelper1);
+    //drawPuzzle(drawPuzzleHelper1);
     document.getElementById("k_value").innerText = "optimized K is below";            
     document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000+" seconds to reach k :"+globalMaxK;
 }
@@ -411,8 +426,14 @@ var globalMathE = function () {
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
 var basicHillClimb = function(allowDownhill) {
+    report="";
+    globalMaxK=0;
     //console.log(allowDownhill)
-    globalMaxK =0;
+    itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+    compTime = document.getElementById("ga_compTime").value?
+    parseFloat(document.getElementById("ga_compTime").value):1.0;//default 1 second
+
+
     var startDate = new Date();
     // declare time
     var endDate   = new Date();
@@ -442,8 +463,8 @@ var basicHillClimb = function(allowDownhill) {
         }
     }
 
-    var report = document.getElementById("report_area");
-    report.innerText=""
+    // var report = document.getElementById("report_area");
+    // report.innerText=""
     
     var iteration = 0;
     while (iteration++ < itrInput) {
@@ -470,7 +491,7 @@ var basicHillClimb = function(allowDownhill) {
         dataMatrix[rRandom][cRandom] = unitNumber;
 
         cleanCanvas(squareSize * puzzleSideNumber + 50);
-        var postEval = puzzleEvaluation(true);
+        var postEval = puzzleEvaluation(false);
 
 
                 //calculate the p if it is annealing
@@ -489,27 +510,38 @@ var basicHillClimb = function(allowDownhill) {
         //revert , when p is 1 , it is never reverted and downhill guaranteed
         if (postEval < prevEval && randNum >= p) {
             dataMatrix[rRandom][cRandom] = prevMatrix[rRandom][cRandom];
-            k = puzzleEvaluation(true);            
+            k = puzzleEvaluation(false);            
         }
         else if(postEval >= globalMaxK){
             endDate  = new Date();  
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
+        iteration%itrToReport===0?report.length==0?report=k:report+=","+k:
         {}
         //console.log("k  "+k+" temp at "+temperature)
+
+        dataSet+=k
+
+        curDate = new Date(); 
+        if((curDate.getTime() - startDate.getTime()) / 1000 > compTime){
+            document.getElementById("k_comp").innerText=
+            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+k;  
+            dataCount=iteration
+
+            break;
+        }
     }
     if (allowDownhill === "basic" )  {
         document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
         +" seconds to reach k :"+globalMaxK +" and by the way the max is the same as final result k";
     }
     else{
-        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
-        +" seconds to reach k :"+globalMaxK;
+        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime())
+        +" ms to reach k :"+globalMaxK;
     }
-    cleanCanvas(0);
-    drawPuzzle(drawPuzzleHelper1);
+    // cleanCanvas(0);
+    // drawPuzzle(drawPuzzleHelper1);
     // console.log("Matrix: " + dataMatrix);
 
     if (postEval < prevEval) {
@@ -524,6 +556,11 @@ var basicHillClimb = function(allowDownhill) {
  * Must have a value in # of iterations and # of restarts in the GUI
  */
 var hillClimbWithRestarts = function () {
+
+    itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;    
+    compTime = document.getElementById("ga_compTime").value?
+    parseFloat(document.getElementById("ga_compTime").value):1.0;//default 1 second
+
     var startDate = new Date();
     // declare time
     var endDate   = new Date();
@@ -541,7 +578,7 @@ var hillClimbWithRestarts = function () {
     var i;
     for (i = 0; i < num_restarts; i += 1) {
         //console.log("restart " + i + ": ");
-        report.innerText+="# "+i+" restart -->"
+        //report.innerText+="# "+i+" restart -->"
         // Generate puzzle and copy data matrix over
         puzzleInput();
         var currEvalValue = basicHillClimb();
@@ -557,6 +594,18 @@ var hillClimbWithRestarts = function () {
             bestPuzzle = JSON.parse(JSON.stringify(currPuzzle));
             bestEvalValue = currEvalValue;
             endDate = new Date();
+            if(bestEvalValue>globalMaxK)globalMaxK=bestEvalValue
+        }
+
+        dataCount++;
+        dataSet+=bestEvalValue;
+
+        curDate = new Date(); 
+        if((curDate.getTime() - startDate.getTime()) / 1000 > compTime){
+            document.getElementById("k_comp").innerText=
+            "stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+bestEvalValue;  
+            //console.log("stop at "+(curDate.getTime() - startDate.getTime()) / 1000 +" with "+bestEvalValue);                      
+            break;
         }
     }
     document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
@@ -568,7 +617,7 @@ var hillClimbWithRestarts = function () {
     cleanCanvas(0);
     initializeMatrix();
     drawPuzzle(drawPuzzleHelper2);
-    puzzleEvaluation(true);
+    puzzleEvaluation(false);
 }
 
 var tease = function () {
@@ -596,8 +645,25 @@ var tease = function () {
 }
 
 var puzzleCombo = function () {
-    puzzleInput()
-    puzzleEvaluation(true)
+    grandGlobalMax=0;
+    var run = document.getElementById("run").value
+    let c = 0
+    while(c++<run){
+    puzzleInput();
+    basicHillClimb("randwalk");
+    report+="\n"    
+    fs.appendFile("./report.csv", report, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        };
+        console.log("File has been saved");
+    });
+
+
+    }
+
+
 }
 
 /**
@@ -610,7 +676,7 @@ var puzzleInput = function () {
     dataMatrix = [];
     theTree = [];
 
-    cleanCanvas(0);
+    //cleanCanvas(0);
 
     puzzleSideNumber = parseInt(document.getElementById("input").value)
     initializeMatrix();

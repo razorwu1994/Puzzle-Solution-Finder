@@ -30,12 +30,16 @@
         <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
     </div>
     <div>
+        <span style="color:aquamarine">How many runs: </span>
+        <input type="text" id="run" /><br/>
         <span style="color:dodgerblue">Type the M value to report K value every M iterations: </span>
-        <input type="text" id="itrToReport"  placeholder="default M is 5"/>
+        <input type="text" id="itrToReport" placeholder="default M is 5" /><br/>
+        <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
+        <input type="text" id="ga_compTime" placeholder="default 1" /><br/>
     </div>
-    <div class="buttonDiv">     
-        <input type="file" id="fileForUpload"/><b>be sure your file is exactly in format as 1 2 3 \r\n 1 2 3</b>
-        <button onclick="fileInput()" style="height:20px;width:15vw" /> Display file contents 
+    <div class="buttonDiv">
+        <input type="file" id="fileForUpload" /><b>be sure your file is exactly in format as 1 2 3 \r\n 1 2 3</b>
+        <button onclick="fileInput()" style="height:20px;width:15vw" /> Display file contents
         <button onclick="cleanCanvas(0)" style="height:20px;width:15vw" /> Clear Canvas
     </div>
     <div class="buttonDiv">
@@ -57,8 +61,8 @@
     <div class="buttonDiv">
         <button onclick="basicHillClimb(`anneal`)" style="height:20px;width:20vw">
             Simulated Annealing </button>
-        <span/> initial temperature: <input type="text" id="init_temperature" value='0'/>
-        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" value='0.5'/>
+        <span/> initial temperature: <input type="text" id="init_temperature" value='0' />
+        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" value='0.5' />
         <h4 style="color:burlywood"> put your iterations under basic hill climb input for simulated annealing </h4>
         <hr/>
     </div>
@@ -66,23 +70,21 @@
     <div class="buttonDiv">
         <button onclick="genenaticAlgoLauncher()" style="height:20px;width:20vw">
             Genetic Algorithm </button>
-        <span/> population size: <input type="text" id="population_size" value='5'/>
+        <span/> population size: <input type="text" id="population_size" value='5' />
         <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
-        <span/> mutating probability: <input type="text" id="mutate_prob"  value='0.5'/><br/>
-        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1"/><br/>  
-        <span/> computation time (seconds) to stop GA(even the time excess,a full iteration won't stop until it is finished) : 
-        <input type="text" id="ga_compTime" placeholder="default 1"/><br/>
-        <b id="k_comp" style="color:crimson"></b>       
+        <span/> mutating probability: <input type="text" id="mutate_prob" value='0.5' /><br/>
+        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1" /><br/>
         <h4 style="color:darksalmon">puzzle size is selected on top</h4>
-        <hr/>           
+        <hr/>
     </div>
 
     <div>
+        <b id="k_comp" style="color:crimson"></b>
         <h5 id="report_area"></h5>
         <h5 id="k_value"></h5>
         <h3 id="best_k"></h3>
         <p id="tree_section"></p>
-        <hr/>   
+        <hr/>
     </div>
     <div style="position:relative;top:2em">
         <canvas id="dummy" width="1600" height="900"></canvas>
