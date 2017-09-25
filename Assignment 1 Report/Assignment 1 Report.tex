@@ -66,4 +66,75 @@ By Brandon Young and Ruicheng Wu
 
 \includegraphics[width=5in, keepaspectratio]{"Task 2/11x11 Puzzle (Unsolvable)"}
 
+\pagebreak
+\paragraph{Task 3. Basic Hill Climb} \mbox{}\\
+
+To get the following plots we ran hill climb 50 times for 3000 iterations and at every 100th iteration we took the K value at that interval. Then we averaged the K values at each interval to get the data for the following scatterplots:
+
+\includegraphics[width=\linewidth]{"Task 3/5x5 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 3/7x7 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 3/9x9 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 3/11x11 Scatterplot"}
+
+\pagebreak
+\paragraph{Task 4. Hill Climbing with Random Restarts} \mbox{}\\
+
+For hill climbing with random restarts, using 600 iterations and 5 restarts, the best individual hill climb was picked and its K values were recorded at every 100th iteration:
+
+\includegraphics[width=\linewidth]{"Task 4/5x5 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 4/7x7 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 4/9x9 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 4/11x11 Scatterplot"}
+
+Compared to basic hill climbing, hill climbing with restarts appears to do worse. On the 5x5 plots, for example, restarts only reaches K = 11 at most, but basic hill climb reaches K = 12.
+
+For the number of restarts, more than 2 restarts are preferred, to differentiate from basic hill climb. Yet the number of restarts should not be too high, or the hill climb process will be too short to be effective compared to basic hill climb. So 5 restarts was chosen for the plots above.
+
+\pagebreak
+\paragraph{Task 5. Hill Climbing with Random Walking} \mbox{}\\
+
+For hill climbing with random walking, p = 0.2, where p is the probability of allowing downhill movement. A similar process with basic hill climbing was used to obtain the scatterplots below:
+
+\includegraphics[width=\linewidth]{"Task 5/5x5 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 5/7x7 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 5/9x9 Scatterplot"}
+
+%\includegraphics[width=\linewidth]{"Task 4/11x11 Scatterplot"}
+
+Compared to basic hill climbing...
+
+Compared to hill climbing with restarts...
+
+\pagebreak
+\paragraph{Task 6. Simulated Annealing} \mbox{}\\
+
+The parameters used for simulated annealing were: T (initial temperature)= 1000, decay rate = 0.99 with 3000 iterations and every 100th iteration being recorded.
+
+\includegraphics[width=\linewidth]{"Task 6/5x5 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 6/7x7 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 6/9x9 Scatterplot"}
+
+\includegraphics[width=\linewidth]{"Task 6/11x11 Scatterplot"}
+
+Compared to basic hill climbing...
+
+Compared to hill climbing with restarts...
+
+\pagebreak
+\paragraph{Task 7. Genetic Algorithms} \mbox{}\\
+
+% Describe algorithm
+
+% Compare time-based with other algorithms
+
 \end{document}
