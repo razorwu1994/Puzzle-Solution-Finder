@@ -11,13 +11,13 @@ By Brandon Young and Ruicheng Wu
 
 \paragraph{Task 1. Puzzle Representation} \mbox{}\\
 
-\quad GUI Example 1:
+Here are a couple of images of the GUI we used for this assignment. This first image shows all of the options available as well as where the parameters are entered in:
 
-\includegraphics[width=\linewidth]{"Task 1/Sample GUI 1"}
+\includegraphics[width=\linewidth]{"Task 1/Sample GUI 4"}
 
-\quad GUI Example 2:
+The image below was obtained after generating a puzzle and running hill climb (number of iterations = 50). The (x:y) format shows the k values at various iterations where x is the iteration number and y is the k value found at that iteration. The GUI also shows the time it took to run basic hill climb, the best K, the puzzle found (matrix on the left) and the evaluated version (matrix on the right).
 
-\includegraphics[width=\linewidth]{"Task 1/Sample GUI 2"}
+\includegraphics[width=\linewidth]{"Task 1/Sample GUI 3"}
 
 \pagebreak
 
@@ -163,7 +163,7 @@ However, compared to basic hill climbing, simulated annealing performs about the
 \pagebreak
 \paragraph{Task 8. Hardest Puzzle} \mbox{}\\
 
-To create the hardest puzzle, we used basic hill climb, since it gave reliable results. By running many iterations on a random 11x11 puzzle, we found the following puzzle with K = 103 (actual puzzle is one the left, evaluation matrix is on the right):
+To create the hardest puzzle, originally we used basic hill climbing for its reliability and got an 11x11 puzzle with K = 103. Then we tried simulated annealing, using t=10 and decay rate=0.5, which ran much faster and produced a puzzle whose K is 106:
 
 \includegraphics[width=\linewidth]{"Task 8/Hardest Puzzle"}
 
