@@ -541,8 +541,8 @@ var basicHillClimb = function(allowDownhill) {
         document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime())
         +" ms to reach k :"+globalMaxK;
     }
-    cleanCanvas(0);
-    drawPuzzle(drawPuzzleHelper1);
+    //cleanCanvas(0);
+    //drawPuzzle(drawPuzzleHelper1);
     // console.log("Matrix: " + dataMatrix);
 
     if (postEval < prevEval) {
