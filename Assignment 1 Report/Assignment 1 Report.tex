@@ -163,7 +163,7 @@ However, compared to basic hill climbing, simulated annealing performs about the
 \pagebreak
 \paragraph{Task 7. Genetic Algorithms} \mbox{}\\
 
-In order to run the genetic algorithm (GA), you need populations size and mutating probability, as seen below. Iterations is optional (by default set to 1) and computation time was used to collect statistics on runtime vs K values. By default, the population size is $5$, the mutation probability is $0.5$ and the number of iterations is $1$ \\
+In order to run the genetic algorithm (GA), you need populations size and mutating probability, as seen below. Iterations is optional (by default set to 1) and computation time was used to collect statistics on runtime VS K values. By default, the population size is $5$, the mutation probability is $0.5$ and the number of iterations is $1$. Note: there are parameters like selection probability that we generates inside of the function.\\
 
 \includegraphics[scale=0.6]{"Task 7/GA-section"}
 \includegraphics[scale=0.6]{"Task 7/Puzzle-size"}\\
@@ -219,7 +219,7 @@ The plots found are listed below with time (in ms) on the x axis and average K v
 \pagebreak
 \paragraph{Task 8. Hardest Puzzle} \mbox{}\\
 
-To create the hardest puzzle, originally we used basic hill climbing for its reliability and got an 11x11 puzzle with K = 103. Then we tried simulated annealing, using t=10 and decay rate=0.5, which ran much faster and produced a puzzle whose K is 106:
+To create the hardest puzzle, originally we used basic hill climbing for its reliability and got an 11x11 puzzle with K = 103 and got stuck for over 30000 runs. Then we tried simulated annealing, using t=10 and decay rate=0.5, which ran much faster and produced a puzzle whose K is 109:
 
 \includegraphics[width=\linewidth]{"Task 8/Hardest Puzzle"}
 

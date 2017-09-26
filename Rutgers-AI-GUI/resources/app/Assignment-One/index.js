@@ -1,7 +1,10 @@
 var squareSize = 40;
+<<<<<<< HEAD
 var itrToReport = document.getElementById("itrToReport").value;
+=======
+var itrToReport = 5;
+>>>>>>> origin/master
 var globalMaxK=0;
-
 /**
  * Helper function 1 for drawing puzzles in basicHillClimb
  */
@@ -411,6 +414,8 @@ var globalMathE = function () {
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
 var basicHillClimb = function(allowDownhill) {
+    itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+    
     //console.log(allowDownhill)
     globalMaxK =0;
     var startDate = new Date();
@@ -497,7 +502,7 @@ var basicHillClimb = function(allowDownhill) {
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
+        iteration%itrToReport===0?report.innerText+=" , "+iteration+":"+k:
         {}
         //console.log("k  "+k+" temp at "+temperature)
     }
@@ -756,7 +761,7 @@ var drawCell = function (x, y, number, offset) {
     ctx.rect(offset + x, 0 + y, squareSize, squareSize);
     ctx.stroke();
 
-    ctx.font = "30px Georgia";
+    ctx.font = "20px Georgia";
     ctx.fillText(number, offset + x + squareSize / 4, 0 + (y + 10) + squareSize / 2);
 
 }
