@@ -755,7 +755,7 @@ var drawCell = function (x, y, number, offset) {
     ctx.rect(offset + x, 0 + y, squareSize, squareSize);
     ctx.stroke();
 
-    ctx.font = "30px Georgia";
+    ctx.font = "20px Georgia";
     ctx.fillText(number, offset + x + squareSize / 4, 0 + (y + 10) + squareSize / 2);
 
 }
