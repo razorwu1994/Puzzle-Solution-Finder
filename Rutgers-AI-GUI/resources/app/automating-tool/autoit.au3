@@ -8,7 +8,7 @@ Func Example()
     Local $hStarttime = _Timer_Init()
 	  Do
 		 If Mod (Floor(_Timer_Diff($hStarttime)/1000),5) = 0 Then
-			MouseClick("left",699,80)
+			MouseClick("left",718,82)
 
 		 EndIf
 

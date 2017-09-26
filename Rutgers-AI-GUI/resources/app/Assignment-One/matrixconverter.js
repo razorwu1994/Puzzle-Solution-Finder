@@ -22,7 +22,7 @@ var convertToMatrix = function(){
                     console.error(err);
                     return;
                 };
-                console.log("File has been saved");
+                //console.log("File has been saved");
             });
         }
     } 

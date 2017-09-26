@@ -648,12 +648,13 @@ var tease = function () {
 var puzzleCombo = function () {
     var run = document.getElementById("run").value
     let c = 0
+    let k =0;
     while(c++<run){
-    basicHillClimb("basic");
+        k = basicHillClimb("anneal");
     }
 
-
-    fs.appendFile("./report.txt", JSON.stringify(dataMatrix)+"\n", (err) => {
+    //console.log(k+" and "+ JSON.stringify(dataMatrix));
+    fs.appendFile("./report.txt", k+":"+JSON.stringify(dataMatrix)+"\n", (err) => {
         if (err) {
             console.error(err);
             return;
@@ -819,7 +820,7 @@ var drawCell = function (x, y, number, offset) {
     ctx.rect(offset + x, 0 + y, squareSize, squareSize);
     ctx.stroke();
 
-    ctx.font = "30px Georgia";
+    ctx.font = "20px Georgia";
     ctx.fillText(number, offset + x + squareSize / 4, 0 + (y + 10) + squareSize / 2);
 
 }
