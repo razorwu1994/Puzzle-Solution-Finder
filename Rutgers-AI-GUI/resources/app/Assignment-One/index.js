@@ -124,7 +124,7 @@ var genenaticAlgoLauncher = function(){
     // Draw matrix to screen
     drawPuzzle(drawPuzzleHelper1);
     document.getElementById("k_value").innerText = "optimized K is below";            
-    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000+" seconds to reach k :"+globalMaxK;
+    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) +" ms to reach k :"+globalMaxK;
 }
 var populationGenerating = function(){
     var popSize = document.getElementById("population_size").value;
@@ -342,7 +342,7 @@ var fileInput = function(){
             
                 for (var c = 0; c < puzzleSideNumber; c++) {
                     let unitNumber = charArray[c]
-                    console.log(unitNumber)
+                    //console.log(unitNumber)
                     if (c == 0) {
                         dataMatrix[r][0] = unitNumber;
                     } else {
@@ -503,12 +503,12 @@ var basicHillClimb = function(allowDownhill) {
         //console.log("k  "+k+" temp at "+temperature)
     }
     if (allowDownhill === "basic" )  {
-        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
-        +" seconds to reach k :"+globalMaxK +" and by the way the max is the same as final result k";
+        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) 
+        +" ms to reach k :"+globalMaxK +" and by the way the max is the same as final result k";
     }
     else{
-        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
-        +" seconds to reach k :"+globalMaxK;
+        document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime())
+        +" ms to reach k :"+globalMaxK;
     }
     cleanCanvas(0);
     drawPuzzle(drawPuzzleHelper1);
@@ -561,8 +561,8 @@ var hillClimbWithRestarts = function () {
             endDate = new Date();
         }
     }
-    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime()) / 1000
-    +" seconds to reach k :"+bestEvalValue +" and by the way the max is the same as final result k";
+    document.getElementById("best_k").innerText="best K : time is "+(endDate.getTime() - startDate.getTime())
+    +" ms to reach k :"+bestEvalValue +" and by the way the max is the same as final result k";
     // Draw best matrix and its evaluation matrix to the screen
     dataMatrix = JSON.parse(JSON.stringify(bestPuzzle));
 
