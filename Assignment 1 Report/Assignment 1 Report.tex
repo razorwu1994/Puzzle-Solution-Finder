@@ -73,24 +73,38 @@ To get the following plots we ran hill climb 50 times for 3000 iterations and at
 
 \includegraphics[width=\linewidth]{"Task 3/5x5 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 3/7x7 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 3/9x9 Scatterplot"}
+
+\bigskip
 
 \includegraphics[width=\linewidth]{"Task 3/11x11 Scatterplot"}
 
 \pagebreak
 \paragraph{Task 4. Hill Climbing with Random Restarts} \mbox{}\\
 
-For hill climbing with random restarts, using 600 iterations and 5 restarts, the best individual hill climb was picked and its K values were recorded at every 100th iteration:
+For hill climbing with random restarts, using 600 iterations and 5 restarts, the best individual hill climb was picked and its K values were recorded at every 30 iterations:
 
 \includegraphics[width=\linewidth]{"Task 4/5x5 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 4/7x7 Scatterplot"}
+
+\bigskip
 
 \includegraphics[width=\linewidth]{"Task 4/9x9 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 4/11x11 Scatterplot"}
+
+\bigskip
 
 Compared to basic hill climbing, hill climbing with restarts appears to do worse. On the 5x5 plots, for example, restarts only reaches K = 11 at most, but basic hill climb reaches K = 12.
 
@@ -103,11 +117,19 @@ For hill climbing with random walking, p = 0.01, where p is the probability of a
 
 \includegraphics[width=\linewidth]{"Task 5/5x5 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 5/7x7 Scatterplot"}
+
+\bigskip
 
 \includegraphics[width=\linewidth]{"Task 5/9x9 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 5/11x11 Scatterplot"}
+
+\bigskip
 
 Random walk does appear to work, however, the dips caused by downhill movement can be too severe to recover from. This is why p was set to 0.01, but it looks like it could be set even lower to retain the effectiveness of basic hill climbing. 
 
@@ -120,11 +142,19 @@ The parameters used for simulated annealing were: T (initial temperature)= 1000,
 
 \includegraphics[width=\linewidth]{"Task 6/5x5 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 6/7x7 Scatterplot"}
+
+\bigskip
 
 \includegraphics[width=\linewidth]{"Task 6/9x9 Scatterplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 6/11x11 Scatterplot"}
+
+\bigskip
 
 Compared to random walk, simulated annealing (SA) is much more successful, reaching a max K of 12 at the 3000th iteration compared to random walk's 8.5. Simulated annealing achieved maximum K values of about 12, 30, 46 and 37 for 5x5, 7x7, 9x9 and 11x11 puzzles respectively. In comparison, in the same total number of iterations, hill climbing with random restarts obtained K values of about 11, 22, 21 and 18. Simulated annealing performs objectively better. 
 
@@ -133,36 +163,34 @@ However, compared to basic hill climbing, simulated annealing performs about the
 \pagebreak
 \paragraph{Task 7. Genetic Algorithms} \mbox{}\\
 
-\begin{large}
-	In order to run Genetic Algorithm, you need those two sections:\\
-	Except Computation Time(It is used by us to record the time before,the feature is unable to use right now), You have a default population size $5$,default mutating probability $0.5$,and default iteration $1$ \\
-\end{large} 
+In order to run the genetic algorithm (GA), you need populations size and mutating probability, as seen below. Iterations is optional (by default set to 1) and computation time was used to collect statistics on runtime vs K values. By default, the population size is $5$, the mutation probability is $0.5$ and the number of iterations is $1$ \\
 
 \includegraphics[scale=0.6]{"Task 7/GA-section"}
 \includegraphics[scale=0.6]{"Task 7/Puzzle-size"}\\
 
-\begin{large}
-	Our implementation of GA is to take a final optimized puzzle(With highest fitness value, K) among all these iterations(default $1$).For each iteration, this method will create puzzle set of population size  $p$ and then evaluate each individual puzzle with fitness function. We select a descent amount of two puzzle groups according to each individuals' fitness value(Some puzzle may not be chosen at all while some may be chosen repeatedly). After selection, we randomly choose one row of puzzles in same group and do this for every group. Then process to cross-over,that is swap Part A of first puzzle with Part A of second puzzle in same group.So now each group should have $PartA-PuzzleOne-PartB-PuzzleTwo$ $PartA-PuzzleTwo-PartB-PuzzleOne$ like structure. The last step is mutating, with corresponding mutating probability,each individual puzzle will have a chance to mutate a randomly selected row(Or may not mutate at all).
-\end{large}
+In our implementation of GA, the final optimized puzzle is the candidate with the highest fitness value, K, after all of the iterations are done. For each iteration, multiple puzzles (determined by population size) are randomly created and placed in a set. In addition, if any puzzles are invalid (have a negative K value), then another puzzle is created, in order to start with a better population. Then each individual puzzle is evaluated with the fitness function. We select a decent amount of two puzzle groups according to each individuals' fitness value (some puzzles may not be chosen at all while some may be chosen repeatedly). After selection, we randomly choose one row of puzzles in same group and do this for every group. Then process to cross-over,that is swap Part A of first puzzle with Part A of second puzzle in same group. So now each group should have $PartA-PuzzleOne-PartB-PuzzleTwo$ $PartA-PuzzleTwo-PartB-PuzzleOne$ like structure. The last step is mutation, with the corresponding mutating probability, each individual puzzle will have a chance to mutate a randomly selected row (or not mutate at all).
 
+\bigskip
+\noindent Steps:
 
-(Here, all puzzles are verified and guaranteed to be valid )\\
+1, Generation: randomly generate population size $p$ puzzles, store in a 3D Array, where each 2D array represents a puzzle.\\
 
-1,Generating: randomly generate population size $p$ puzzles,store in a Three-Dimensional Array,2D array represents each puzzle.\\
-
-2.Fitness Evaluation and Selection: process each puzzle with fitness function and store corresponding k into an array. Will calculate the total k sum and the proportion of each puzzle, for instance, a k group : $[4,3,2,1]$, the puzzle with ${k=4}$ will be 40 percent and puzzle with $k=1$ will be 10 percent. These probability will be mapping along one line with range $[0,1)$, in this case,$[0,0.4),[0.4,0.7),[0.7,0.9),[0.9,1)$. After storing and mapping k, we use $Math.random()$ to determine the selection. In $Javascript$, $Math.random()$ will generate a number randomly between 0(inclusive),1(exclusive).We check which interval it is located.Do this twice for each selection iteration(an inner loop).According to the combinatorial theory, we decide to run this selection loop until we have either $C(p,2)$ group with no duplicate matrix or this loop has iterated more than population size p(In case the loop stuck when some puzzles with extreme high k being choosing repeatedly or just the order being swapped like $A-B$ and $B-A$).After this loop, we should have a descent amount of group with two puzzles each.\\
+2. Fitness Evaluation and Selection: process each puzzle with fitness function and store corresponding k into an array. Will calculate the total k sum and the proportion of each puzzle, for instance, a k group : $[4,3,2,1]$, the puzzle with ${k=4}$ will be 40 percent and puzzle with $k=1$ will be 10 percent. These probability will be mapping along one line with range $[0,1)$, in this case,$[0,0.4),[0.4,0.7),[0.7,0.9),[0.9,1)$. After storing and mapping k, we use $Math.random()$ to determine the selection. In $Javascript$, $Math.random()$ will generate a number randomly between 0(inclusive),1(exclusive).We check which interval it is located.Do this twice for each selection iteration(an inner loop).According to the combinatorial theory, we decide to run this selection loop until we have either $C(p,2)$ group with no duplicate matrix or this loop has iterated more than population size p(In case the loop stuck when some puzzles with extreme high k being choosing repeatedly or just the order being swapped like $A-B$ and $B-A$).After this loop, we should have a descent amount of group with two puzzles each.\\
 
 (Note : in order to keep a good start, we sort out any puzzle with negative value.)\\
 
-3.Random Pick and Crossing-Over: for each group , use an advanced random number trick to pick a row to cut off and cross over, each group will only need one random number bases their total row numbers. We didn't choose to pick column because it is easier to get entire row than column when we coded(Or if you visualize the $2d$ array as column-row,that is another story).When cross-over, PartA of 1st puzzle will be joined with PartB of 2nd puzzle to make a new puzzle with exact same size as before.And the rest part joined together. Apply this operation to each group, a group of new crossover puzzle is presenting.\\
+3. Random Pick and Crossing-Over: for each group , use an advanced random number trick to pick a row to cut off and cross over, each group will only need one random number bases their total row numbers. We didn't choose to pick column because it is easier to get entire row than column when we coded(Or if you visualize the $2d$ array as column-row,that is another story).When cross-over, PartA of 1st puzzle will be joined with PartB of 2nd puzzle to make a new puzzle with exact same size as before.And the rest part joined together. Apply this operation to each group, a group of new crossover puzzle is presenting.\\
 
-4.Mutating and Find Best K: Going through all operations before, in our code,randomly pick a row for each puzzle first, then we use random trick again to decide if their chosen rows are going to be mutated or not(We choose to mutate one row instead of one cell).After mutating has done, we present all these puzzles to being evaluated again and capture the puzzle with highest K and draw it and its visualizing matrix on the screen presenting with other data.\\
+4. Mutating and Find Best K: Going through all operations before, in our code,randomly pick a row for each puzzle first, then we use random trick again to decide if their chosen rows are going to be mutated or not(We choose to mutate one row instead of one cell).After mutating has done, we present all these puzzles to being evaluated again and capture the puzzle with highest K and draw it and its visualizing matrix on the screen presenting with other data.\\
 
-5.Grand Outer Loop and Harvesting: All operations above are just one run of GA. So we take iteration number to go through GA and harvest the puzzle with highest value K and present it and its visualizing matrix on the screen.\\
+5. Grand Outer Loop and Harvesting: All operations above are just one run of GA. So we take iteration number to go through GA and harvest the puzzle with highest value K and present it and its visualizing matrix on the screen.\\
+
+\bigskip
+\paragraph{Computation Time Comparison} \mbox{}\\
 
 As far as the computation time goes, our genetic algorithm appears to perform the best overall compared to all other methods. 
 
-The parameters used are the following:
+The parameters were used:
 
 \begin{itemize}
 	\item Basic Hill Climb: 1000 iterations
@@ -176,9 +204,15 @@ The plots found are listed below with time (in ms) on the x axis and average K v
 
 \includegraphics[width=\linewidth]{"Task 7/5x5 Timeplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 7/7x7 Timeplot"}
 
+\bigskip
+
 \includegraphics[width=\linewidth]{"Task 7/9x9 Timeplot"}
+
+\bigskip
 
 \includegraphics[width=\linewidth]{"Task 7/11x11 Timeplot"}
 
