@@ -1,5 +1,5 @@
 var squareSize = 40;
-var itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+var itrToReport = document.getElementById("itrToReport").value;
 var globalMaxK=0;
 
 /**
@@ -418,6 +418,7 @@ var basicHillClimb = function(allowDownhill) {
     var endDate   = new Date();
 
     var itrInput = document.getElementById("climb_iteration").value;
+    var itrToReport = document.getElementById("itrToReport").value;        
     var p = document.getElementById("prob_downhill").value; // probability of allowing a downhill move
     var randNum;
     var temperature, decayrate;
