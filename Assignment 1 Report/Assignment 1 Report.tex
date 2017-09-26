@@ -133,32 +133,54 @@ However, compared to basic hill climbing, simulated annealing performs about the
 \pagebreak
 \paragraph{Task 7. Genetic Algorithms} \mbox{}\\
 
-	\begin{large}
-		In order to run Genetic Algorithm, you need those two sections:\\
-		Except Computation Time(It is used by us to record the time before,the feature is unable to use right now), You have a default population size $5$,default mutating probability $0.5$,and default iteration $1$ \\
-	\end{large} 
-	
-	\includegraphics[scale=0.6]{"Task 7/GA-section"}
-	\includegraphics[scale=0.6]{"Task 7/Puzzle-size"}\\
-	
-	\begin{large}
-		Our implementation of GA is to take a final optimized puzzle(With highest fitness value, K) among all these iterations(default $1$).For each iteration, this method will create puzzle set of population size  $p$ and then evaluate each individual puzzle with fitness function. We select a descent amount of two puzzle groups according to each individuals' fitness value(Some puzzle may not be chosen at all while some may be chosen repeatedly). After selection, we randomly choose one row of puzzles in same group and do this for every group. Then process to cross-over,that is swap Part A of first puzzle with Part A of second puzzle in same group.So now each group should have $PartA-PuzzleOne-PartB-PuzzleTwo$ $PartA-PuzzleTwo-PartB-PuzzleOne$ like structure. The last step is mutating, with corresponding mutating probability,each individual puzzle will have a chance to mutate a randomly selected row(Or may not mutate at all).
-	\end{large}
-	
-	
-	(Here, all puzzles are verified and guaranteed to be valid )\\
-	
-	1,Generating: randomly generate population size $p$ puzzles,store in a Three-Dimensional Array,2D array represents each puzzle.\\
-	
-	2.Fitness Evaluation and Selection: process each puzzle with fitness function and store corresponding k into an array. Will calculate the total k sum and the proportion of each puzzle, for instance, a k group : $[4,3,2,1]$, the puzzle with ${k=4}$ will be 40 percent and puzzle with $k=1$ will be 10 percent. These probability will be mapping along one line with range $[0,1)$, in this case,$[0,0.4),[0.4,0.7),[0.7,0.9),[0.9,1)$. After storing and mapping k, we use $Math.random()$ to determine the selection. In $Javascript$, $Math.random()$ will generate a number randomly between 0(inclusive),1(exclusive).We check which interval it is located.Do this twice for each selection iteration(an inner loop).According to the combinatorial theory, we decide to run this selection loop until we have either $C(p,2)$ group with no duplicate matrix or this loop has iterated more than population size p(In case the loop stuck when some puzzles with extreme high k being choosing repeatedly or just the order being swapped like $A-B$ and $B-A$).After this loop, we should have a descent amount of group with two puzzles each.\\
-	
-	(Note : in order to keep a good start, we sort out any puzzle with negative value.)\\
-	
-	3.Random Pick and Crossing-Over: for each group , use an advanced random number trick to pick a row to cut off and cross over, each group will only need one random number bases their total row numbers. We didn't choose to pick column because it is easier to get entire row than column when we coded(Or if you visualize the $2d$ array as column-row,that is another story).When cross-over, PartA of 1st puzzle will be joined with PartB of 2nd puzzle to make a new puzzle with exact same size as before.And the rest part joined together. Apply this operation to each group, a group of new crossover puzzle is presenting.\\
-	
-	4.Mutating and Find Best K: Going through all operations before, in our code,randomly pick a row for each puzzle first, then we use random trick again to decide if their chosen rows are going to be mutated or not(We choose to mutate one row instead of one cell).After mutating has done, we present all these puzzles to being evaluated again and capture the puzzle with highest K and draw it and its visualizing matrix on the screen presenting with other data.\\
-	
-	5.Grand Outer Loop and Harvesting: All operations above are just one run of GA. So we take iteration number to go through GA and harvest the puzzle with highest value K and present it and its visualizing matrix on the screen.\\
+\begin{large}
+	In order to run Genetic Algorithm, you need those two sections:\\
+	Except Computation Time(It is used by us to record the time before,the feature is unable to use right now), You have a default population size $5$,default mutating probability $0.5$,and default iteration $1$ \\
+\end{large} 
+
+\includegraphics[scale=0.6]{"Task 7/GA-section"}
+\includegraphics[scale=0.6]{"Task 7/Puzzle-size"}\\
+
+\begin{large}
+	Our implementation of GA is to take a final optimized puzzle(With highest fitness value, K) among all these iterations(default $1$).For each iteration, this method will create puzzle set of population size  $p$ and then evaluate each individual puzzle with fitness function. We select a descent amount of two puzzle groups according to each individuals' fitness value(Some puzzle may not be chosen at all while some may be chosen repeatedly). After selection, we randomly choose one row of puzzles in same group and do this for every group. Then process to cross-over,that is swap Part A of first puzzle with Part A of second puzzle in same group.So now each group should have $PartA-PuzzleOne-PartB-PuzzleTwo$ $PartA-PuzzleTwo-PartB-PuzzleOne$ like structure. The last step is mutating, with corresponding mutating probability,each individual puzzle will have a chance to mutate a randomly selected row(Or may not mutate at all).
+\end{large}
+
+
+(Here, all puzzles are verified and guaranteed to be valid )\\
+
+1,Generating: randomly generate population size $p$ puzzles,store in a Three-Dimensional Array,2D array represents each puzzle.\\
+
+2.Fitness Evaluation and Selection: process each puzzle with fitness function and store corresponding k into an array. Will calculate the total k sum and the proportion of each puzzle, for instance, a k group : $[4,3,2,1]$, the puzzle with ${k=4}$ will be 40 percent and puzzle with $k=1$ will be 10 percent. These probability will be mapping along one line with range $[0,1)$, in this case,$[0,0.4),[0.4,0.7),[0.7,0.9),[0.9,1)$. After storing and mapping k, we use $Math.random()$ to determine the selection. In $Javascript$, $Math.random()$ will generate a number randomly between 0(inclusive),1(exclusive).We check which interval it is located.Do this twice for each selection iteration(an inner loop).According to the combinatorial theory, we decide to run this selection loop until we have either $C(p,2)$ group with no duplicate matrix or this loop has iterated more than population size p(In case the loop stuck when some puzzles with extreme high k being choosing repeatedly or just the order being swapped like $A-B$ and $B-A$).After this loop, we should have a descent amount of group with two puzzles each.\\
+
+(Note : in order to keep a good start, we sort out any puzzle with negative value.)\\
+
+3.Random Pick and Crossing-Over: for each group , use an advanced random number trick to pick a row to cut off and cross over, each group will only need one random number bases their total row numbers. We didn't choose to pick column because it is easier to get entire row than column when we coded(Or if you visualize the $2d$ array as column-row,that is another story).When cross-over, PartA of 1st puzzle will be joined with PartB of 2nd puzzle to make a new puzzle with exact same size as before.And the rest part joined together. Apply this operation to each group, a group of new crossover puzzle is presenting.\\
+
+4.Mutating and Find Best K: Going through all operations before, in our code,randomly pick a row for each puzzle first, then we use random trick again to decide if their chosen rows are going to be mutated or not(We choose to mutate one row instead of one cell).After mutating has done, we present all these puzzles to being evaluated again and capture the puzzle with highest K and draw it and its visualizing matrix on the screen presenting with other data.\\
+
+5.Grand Outer Loop and Harvesting: All operations above are just one run of GA. So we take iteration number to go through GA and harvest the puzzle with highest value K and present it and its visualizing matrix on the screen.\\
+
+As far as the computation time goes, our genetic algorithm appears to perform the best overall compared to all other methods. 
+
+The parameters used are the following:
+
+\begin{itemize}
+	\item Basic Hill Climb: 1000 iterations
+	\item Random Restart: 40 iterations, 25 restarts
+	\item Random Walk: 1000 iterations, p = 0.5
+	\item Simulated Annealing: 1000 iterations, T = 1000, decay rate = 0.5
+	\item Genetic Algorithm: population size = 50, iteration = 20, mutation probability = 0.5
+\end{itemize}
+
+The plots found are listed below with time (in ms) on the x axis and average K value on the y axis.
+
+\includegraphics[width=\linewidth]{"Task 7/5x5 Timeplot"}
+
+\includegraphics[width=\linewidth]{"Task 7/7x7 Timeplot"}
+
+\includegraphics[width=\linewidth]{"Task 7/9x9 Timeplot"}
+
+\includegraphics[width=\linewidth]{"Task 7/11x11 Timeplot"}
 
 \pagebreak
 \paragraph{Task 8. Hardest Puzzle} \mbox{}\\
