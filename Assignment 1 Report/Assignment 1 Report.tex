@@ -133,14 +133,13 @@ Compared to hill climbing with restarts...
 \pagebreak
 \paragraph{Task 7. Genetic Algorithms} \mbox{}\\
 
-\begin{document}
 	\begin{large}
 		In order to run Genetic Algorithm, you need those two sections:\\
 		Except Computation Time(It is used by us to record the time before,the feature is unable to use right now), You have a default population size $5$,default mutating probability $0.5$,and default iteration $1$ \\
 	\end{large} 
 	
-	\includegraphics[scale=0.6]{GA-section.png}
-	\includegraphics[scale=0.6]{Puzzle-size.png}\\
+	\includegraphics[scale=0.6]{"Task 7/GA-section"}
+	\includegraphics[scale=0.6]{"Task 7/Puzzle-size"}\\
 	
 	\begin{large}
 		Our implementation of GA is to take a final optimized puzzle(With highest fitness value, K) among all these iterations(default $1$).For each iteration, this method will create puzzle set of population size  $p$ and then evaluate each individual puzzle with fitness function. We select a descent amount of two puzzle groups according to each individuals' fitness value(Some puzzle may not be chosen at all while some may be chosen repeatedly). After selection, we randomly choose one row of puzzles in same group and do this for every group. Then process to cross-over,that is swap Part A of first puzzle with Part A of second puzzle in same group.So now each group should have $PartA-PuzzleOne-PartB-PuzzleTwo$ $PartA-PuzzleTwo-PartB-PuzzleOne$ like structure. The last step is mutating, with corresponding mutating probability,each individual puzzle will have a chance to mutate a randomly selected row(Or may not mutate at all).
