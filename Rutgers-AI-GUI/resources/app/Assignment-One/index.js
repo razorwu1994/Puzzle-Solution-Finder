@@ -1,9 +1,5 @@
 var squareSize = 40;
-<<<<<<< HEAD
 var itrToReport = document.getElementById("itrToReport").value;
-=======
-var itrToReport = 5;
->>>>>>> origin/master
 var globalMaxK=0;
 /**
  * Helper function 1 for drawing puzzles in basicHillClimb
