@@ -116,7 +116,7 @@ Compared to plain hill climbing and climbing with restarts, random walk performs
 \pagebreak
 \paragraph{Task 6. Simulated Annealing} \mbox{}\\
 
-The parameters used for simulated annealing were: T (initial temperature)= 1000, decay rate = 0.99 with 3000 iterations and every 100th iteration being recorded.
+The parameters used for simulated annealing were: T (initial temperature)= 1000, decay rate = 0.99 with 3000 iterations and every 100th iteration being recorded. The decay rate was picked so that the temperature would not decay too quickly or the results would end up the same as random walk's.
 
 \includegraphics[width=\linewidth]{"Task 6/5x5 Scatterplot"}
 
@@ -159,5 +159,12 @@ However, compared to basic hill climbing, simulated annealing performs about the
 	4.Mutating and Find Best K: Going through all operations before, in our code,randomly pick a row for each puzzle first, then we use random trick again to decide if their chosen rows are going to be mutated or not(We choose to mutate one row instead of one cell).After mutating has done, we present all these puzzles to being evaluated again and capture the puzzle with highest K and draw it and its visualizing matrix on the screen presenting with other data.\\
 	
 	5.Grand Outer Loop and Harvesting: All operations above are just one run of GA. So we take iteration number to go through GA and harvest the puzzle with highest value K and present it and its visualizing matrix on the screen.\\
+
+\pagebreak
+\paragraph{Task 8. Hardest Puzzle} \mbox{}\\
+
+To create the hardest puzzle, we used basic hill climb, since it gave reliable results. By running many iterations on a random 11x11 puzzle, we found the following puzzle with K = 103 (actual puzzle is one the left, evaluation matrix is on the right):
+
+\includegraphics[width=\linewidth]{"Task 8/Hardest Puzzle"}
 
 \end{document}
