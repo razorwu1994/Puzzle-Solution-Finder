@@ -1,7 +1,6 @@
 var squareSize = 40;
-var itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+var itrToReport = 5;
 var globalMaxK=0;
-
 /**
  * Helper function 1 for drawing puzzles in basicHillClimb
  */
@@ -411,6 +410,8 @@ var globalMathE = function () {
  * @return {number} evaluation function value for the new matrix after hill climbing
  */
 var basicHillClimb = function(allowDownhill) {
+    itrToReport = document.getElementById("itrToReport").value?document.getElementById("itrToReport").value:5;
+    
     //console.log(allowDownhill)
     globalMaxK =0;
     var startDate = new Date();
@@ -496,7 +497,7 @@ var basicHillClimb = function(allowDownhill) {
             globalMaxK = postEval;   
             //console.log(prevEval+" "+postEval);
         }
-        iteration%itrToReport===0||iteration===itrInput-1?report.innerText+=" , "+iteration+":"+k:
+        iteration%itrToReport===0?report.innerText+=" , "+iteration+":"+k:
         {}
         //console.log("k  "+k+" temp at "+temperature)
     }
