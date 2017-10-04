@@ -645,6 +645,7 @@ var tease = function () {
     drawPuzzle(drawPuzzleHelper2);
 }
 
+var globalBIGK = 109;
 var puzzleCombo = function () {
     var run = document.getElementById("run").value
     let c = 0
@@ -661,6 +662,16 @@ var puzzleCombo = function () {
         };
         console.log("File has been saved");
     });
+    if(k>globalBIGK){
+        globalBIGK=k;
+        fs.writeFile("./report.txt", globalBIGK+":"+JSON.stringify(dataMatrix)+"\n", (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            };
+            console.log("New Biggest data found");
+        });
+    }
     
 
 }
