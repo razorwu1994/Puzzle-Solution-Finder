@@ -14,86 +14,111 @@
 </style>
 
 <body>
-    <div>
-        Puzzle size
-        <select id="input">
-          <!-- for easy testing ,you can uncomment this -->
-                    <option value="5">5</option>
-                    <option value="7">7</option>
-                    <option value="9">9</option>
-                    <option value="11">11</option>
-        </select>
-        <button onclick="puzzleInput()" style="height:20px;width:20vw" /> Generate Puzzle </br>
-        <button onclick="puzzleEvaluation(true)" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
-        <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
-        <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
+    <button onclick="reveal()">Next Page</button>
+    <div id="assignTwo">
+        <div style="display:flex;flex-direction:row;flex-wrap:wrap">
+            -c
+            <select id="-c">
+            <option value='mlp'>mlp</option>
+            <option value='perceptron'>perceptron</option>
+        </select> -t <input type="text" id="-t" value='5000' /> -s <input type="text" id="-s" value='1000' /> -i <input type="text" id="-i" value='3' />
+            <button onclick="runClassifier()" style="height:20px;width:20vw" /> Submit Command training size
+            <br/>
+        </div>
+        <div style="display:flex;flex-direction:row">
+            <input type="text" id="trainSize" value='500' /> validation size<input type="text" id="validSize" value='500' /> testing size<input type="text" id="testSize" value='500' />
+        </div>
+        <button onclick="puzzleDataCombo()" style="height:20px;width:20vw" /> Generate Puzzle </br>
     </div>
-    <div>
-        <span style="color:aquamarine">How many runs: </span>
-        <input type="text" id="run" /><br/>
-        <span style="color:dodgerblue">Type the M value to report K value every M iterations: </span>
-        <input type="text" id="itrToReport" placeholder="default M is 5" /><br/>
-        <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
-        <input type="text" id="ga_compTime" placeholder="default 1" /><br/>
-    </div>
-    <div class="buttonDiv">
-        <input type="file" id="fileForUpload" /><b>be sure your file is exactly in format as 1 2 3 \r\n 1 2 3</b>
-        <button onclick="convertToMatrix()" style="height:20px;width:15vw" /> convertToMatrix
-        <button onclick="fileInput()" style="height:20px;width:15vw" /> Display file contents
-        <button onclick="cleanCanvas(0)" style="height:20px;width:15vw" /> Clear Canvas
-    </div>
-    <div class="buttonDiv">
-        <button onclick="basicHillClimb(`basic`)" style="height:20px;width:20vw">
-             Basic Hill Climb</button> # of iterations: <input value='1' type="text" id="climb_iteration" />
-    </div>
+    <div id="assignOne" style="display:none">
+        <div>
+            Puzzle size
+            <select id="input">
+            <!-- for easy testing ,you can uncomment this -->
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                        <option value="9">9</option>
+                        <option value="11">11</option>
+                        <option value="50">50</option>
+            </select>
+            <button onclick="puzzleInput(true)" style="height:20px;width:20vw" /> Generate Puzzle </br>
+            <button onclick="puzzleEvaluation(true)" style="height:20px;width:20vw" id="eval" /> Puzzle Evaluation</br>
+            <button onclick="puzzleCombo()" style="height:20px;width:20vw" /> Puzzle Combination</br>
+            <button onclick="tease()" style="height:20px;width:20vw" /> Tease</br>
+        </div>
+        <div>
+            <span style="color:aquamarine">How many runs: </span>
+            <input type="text" id="run" /><br/>
+            <span style="color:dodgerblue">Type the M value to report K value every M iterations: </span>
+            <input type="text" id="itrToReport" placeholder="default M is 5" /><br/>
+            <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
+            <input type="text" id="ga_compTime" placeholder="default 1" /><br/>
+        </div>
+        <div class="buttonDiv">
+            <input type="file" id="fileForUpload" /><b>be sure your file is exactly in format as 1 2 3 \r\n 1 2 3</b>
+            <button onclick="convertToMatrix()" style="height:20px;width:15vw" /> convertToMatrix
+            <button onclick="fileInput()" style="height:20px;width:15vw" /> Display file contents
+            <button onclick="cleanCanvas(0)" style="height:20px;width:15vw" /> Clear Canvas
+        </div>
+        <div class="buttonDiv">
+            <button onclick="basicHillClimb(`basic`)" style="height:20px;width:20vw">
+                Basic Hill Climb</button> # of iterations: <input value='1' type="text" id="climb_iteration" />
+        </div>
 
-    <div class="buttonDiv">
-        <button onclick="hillClimbWithRestarts()" style="height:20px;width:20vw">
-             Hill Climb w/ Random Restarts </button> # of restarts <input value='1' type="text" id="num_restarts" />
-    </div>
+        <div class="buttonDiv">
+            <button onclick="hillClimbWithRestarts()" style="height:20px;width:20vw">
+                Hill Climb w/ Random Restarts </button> # of restarts <input value='1' type="text" id="num_restarts" />
+        </div>
 
-    <div class="buttonDiv">
-        <button onclick="basicHillClimb(`randwalk`)" style="height:20px;width:20vw">
-             Hill Climb w/ Random Walking </button> probability (p): <input value='0' type="text" id="prob_downhill" />
-        <hr/>
-    </div>
+        <div class="buttonDiv">
+            <button onclick="basicHillClimb(`randwalk`)" style="height:20px;width:20vw">
+                Hill Climb w/ Random Walking </button> probability (p): <input value='0' type="text" id="prob_downhill" />
+            <hr/>
+        </div>
 
-    <div class="buttonDiv">
-        <button onclick="basicHillClimb(`anneal`)" style="height:20px;width:20vw">
-            Simulated Annealing </button>
-        <span/> initial temperature: <input type="text" id="init_temperature" value='0' />
-        <span/> temperature decay rate: <input type="text" id="decayrate_temperature" value='0.5' />
-        <h4 style="color:burlywood"> put your iterations under basic hill climb input for simulated annealing </h4>
-        <hr/>
-    </div>
+        <div class="buttonDiv">
+            <button onclick="basicHillClimb(`anneal`)" style="height:20px;width:20vw">
+                Simulated Annealing </button>
+            <span/> initial temperature: <input type="text" id="init_temperature" value='0' />
+            <span/> temperature decay rate: <input type="text" id="decayrate_temperature" value='0.5' />
+            <h4 style="color:burlywood"> put your iterations under basic hill climb input for simulated annealing </h4>
+            <hr/>
+        </div>
 
-    <div class="buttonDiv">
-        <button onclick="genenaticAlgoLauncher()" style="height:20px;width:20vw">
-            Genetic Algorithm </button>
-        <span/> population size: <input type="text" id="population_size" value='5' />
-        <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
-        <span/> mutating probability: <input type="text" id="mutate_prob" value='0.5' /><br/>
-        <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1" /><br/>
-        <h4 style="color:darksalmon">puzzle size is selected on top</h4>
-        <hr/>
-    </div>
+        <div class="buttonDiv">
+            <button onclick="genenaticAlgoLauncher()" style="height:20px;width:20vw">
+                Genetic Algorithm </button>
+            <span/> population size: <input type="text" id="population_size" value='5' />
+            <!-- <span/> random selection iteration time: <input type="text" id="randitr_time" required/> -->
+            <span/> mutating probability: <input type="text" id="mutate_prob" value='0.5' /><br/>
+            <span/> iterations to run GA : <input type="text" id="ga_iterations" placeholder="default 1" /><br/>
+            <h4 style="color:darksalmon">puzzle size is selected on top</h4>
+            <hr/>
+        </div>
 
-    <div>
-        <b id="k_comp" style="color:crimson"></b>
-        <h5 id="report_area"></h5>
-        <h5 id="k_value"></h5>
-        <h3 id="best_k"></h3>
-        <p id="tree_section"></p>
-        <hr/>
-    </div>
-    <div style="position:relative;top:2em">
-        <canvas id="dummy" width="1600" height="900"></canvas>
+        <div>
+            <b id="k_comp" style="color:crimson"></b>
+            <h5 id="report_area"></h5>
+            <h5 id="k_value"></h5>
+            <h3 id="best_k"></h3>
+            <p id="tree_section"></p>
+            <hr/>
+        </div>
+        <div style="position:relative;top:2em">
+            <canvas id="dummy" width="1600" height="900"></canvas>
+        </div>
     </div>
 </body>
 
 <script>
     // You can also require other files to run in this process
     require('./renderer.js')
+    var reveal = () => {
+        let ONE_DISPLAY = document.getElementById("assignOne").style.display
+        let TWO_DISPLAY = document.getElementById("assignTwo").style.display
+        document.getElementById("assignOne").style.display = ONE_DISPLAY === 'none' ? 'inline' : 'none'
+        document.getElementById("assignTwo").style.display = TWO_DISPLAY === 'none' ? 'inline' : 'none'
+    }
 </script>
 
 
@@ -102,7 +127,7 @@
 <!-- //note:import js files here  -->
 <script src="Assignment-One/index.js"></script>
 <script src="Assignment-One/matrixconverter.js"></script>
-
+<script src="Assignment-Two/classifier.js"></script>
 <!-- GUI function section (place global variables here) -->
 <script>
     var puzzleSideNumber;

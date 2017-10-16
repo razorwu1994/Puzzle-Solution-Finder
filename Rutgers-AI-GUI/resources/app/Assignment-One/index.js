@@ -42,9 +42,9 @@ var drawPuzzleHelper3 = function(r, c, xCor, yCor){
 
     if (c == puzzleSideNumber - 1 && r == c) {
         dataMatrix[puzzleSideNumber - 1][puzzleSideNumber - 1] = 0
-        drawCell(xCor, yCor, 0, 0);
+        //drawCell(xCor, yCor, 0, 0);
     } else{
-        drawCell(xCor, yCor, unitNumber, 0);
+        //drawCell(xCor, yCor, unitNumber, 0);
     }
 }
 
@@ -676,10 +676,89 @@ var puzzleCombo = function () {
 
 }
 
+var puzzleDataCombo = function(){
+    let trainSize = document.getElementById("trainSize").value
+    let validSize = document.getElementById("validSize").value
+    let testSize = document.getElementById("testSize").value
+    let counter = 0
+    var DataSet=[]
+    var LabelSet=[]
+    while(counter<trainSize){
+        puzzleInput(false);
+        LabelSet.push(puzzleEvaluation(false))
+        DataSet.push(dataMatrix.reduce(function(a, b) {
+            return a.concat(b);
+          }))
+        counter++
+    }
+    fs.writeFile("./Assignment-Two/python/data/trainData.txt", JSON.stringify(DataSet), (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            };
+    });
+    fs.writeFile("./Assignment-Two/python/data/trainLabel.txt", LabelSet, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        };
+    });
+    console.log("finish write train data and its label")
+
+    DataSet=[]
+    LabelSet=[]
+    counter = 0
+    while(counter<validSize){
+        puzzleInput(false);
+        LabelSet.push(puzzleEvaluation(false))
+        DataSet.push(dataMatrix.reduce(function(a, b) {
+            return a.concat(b);
+          }))
+        counter++
+    }
+    fs.writeFile("./Assignment-Two/python/data/validData.txt", JSON.stringify(DataSet), (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            };
+    });
+    fs.writeFile("./Assignment-Two/python/data/validLabel.txt", LabelSet, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        };
+    });
+    console.log("finish write valid data and its label")
+
+    counter = 0
+    DataSet=[]
+    LabelSet=[]
+    while(counter<testSize){
+    puzzleInput(false);
+    LabelSet.push(puzzleEvaluation(false))
+    DataSet.push(dataMatrix.reduce(function(a, b) {
+        return a.concat(b);
+      }))    
+    counter++
+    }
+    fs.writeFile("./Assignment-Two/python/data/testData.txt", JSON.stringify(DataSet), (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        };
+    });
+    fs.writeFile("./Assignment-Two/python/data/testLabel.txt", LabelSet, (err) => {
+    if (err) {
+        console.error(err);
+        return;
+    };
+    });
+    console.log("finish write test data and its label")
+}
 /**
  * Generate a valid, random puzzle based on the chosen size
  */
-var puzzleInput = function () {
+var puzzleInput = function (drawORnot) {
     document.getElementById("eval").disabled = false;
     document.getElementById("k_value").innerText = ""
     document.getElementById("tree_section").innerText = ""
@@ -687,8 +766,9 @@ var puzzleInput = function () {
     theTree = [];
 
     cleanCanvas(0);
+    if(!drawORnot)puzzleSideNumber=50//extra credit we play around with 50
+    else puzzleSideNumber = parseInt(document.getElementById("input").value)
 
-    puzzleSideNumber = parseInt(document.getElementById("input").value)
     initializeMatrix();
     drawPuzzle(drawPuzzleHelper3, true)
 
