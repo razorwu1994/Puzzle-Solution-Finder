@@ -8,12 +8,13 @@ import mlp
 import samples
 import sys
 import util
+import json
 
 TRAINING_SET_SIZE = 5000
 TEST_SET_SIZE = 1000
 DIGIT_DATUM_WIDTH=28
 DIGIT_DATUM_HEIGHT=28
-
+LEGALLABELSIZE=2500
 def basicFeatureExtractorDigit(datum):
   """
   Returns a set of pixel features indicating whether
@@ -105,6 +106,8 @@ def readCommand( argv ):
   parser.add_option('-w', '--weights', help=default('Whether to print weights'), default=False, action="store_true")
   parser.add_option('-i', '--iterations', help=default("Maximum iterations to run training"), default=3, type="int")
   parser.add_option('-s', '--test', help=default("Amount of test data to use"), default=TEST_SET_SIZE, type="int")
+  parser.add_option('-u', '--legallabelmax', help=default("Size of legal labels upper bound"), default=LEGALLABELSIZE, type="int")
+  parser.add_option('-l', '--legallabelmin', help=default("Size of legal labels lower bound"), default=0, type="int")
 
   options, otherjunk = parser.parse_args(argv)
   if len(otherjunk) != 0: raise Exception('Command line input not understood: ' + str(otherjunk))
@@ -116,9 +119,10 @@ def readCommand( argv ):
   print "classifier:\t\t" + options.classifier
   print "training set size:\t" + str(options.training)
 
-  printImage = ImagePrinter(DIGIT_DATUM_WIDTH, DIGIT_DATUM_HEIGHT).printImage
-  featureFunction = basicFeatureExtractorDigit
-  legalLabels = range(10)
+  # printImage = ImagePrinter(DIGIT_DATUM_WIDTH, DIGIT_DATUM_HEIGHT).printImage
+  # featureFunction = basicFeatureExtractorDigit
+
+  legalLabels = range(options.legallabelmax+1)[options.legallabelmin:options.legallabelmax+1]
     
   if options.training <= 0:
     print "Training set size should be a positive integer (you provided: %d)" % options.training
@@ -140,8 +144,8 @@ def readCommand( argv ):
     sys.exit(2)
 
   args['classifier'] = classifier
-  args['featureFunction'] = featureFunction
-  args['printImage'] = printImage
+  # args['featureFunction'] = featureFunction
+  # args['printImage'] = printImage
   
   return args, options
 
@@ -160,27 +164,62 @@ USAGE_STRING = """
 
 def runClassifier(args, options):
 
-  featureFunction = args['featureFunction']
+  # featureFunction = args['featureFunction']
   classifier = args['classifier']
-  printImage = args['printImage']
+  # printImage = args['printImage']
       
   # Load data  
   numTraining = options.training
   numTest = options.test
 
-  rawTrainingData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/trainingimages", numTraining,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  trainingLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/traininglabels", numTraining)
-  rawValidationData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/validationimages", numTest,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  validationLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/validationlabels", numTest)
-  rawTestData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/testimages", numTest,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  testLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/testlabels", numTest)
+  # rawTrainingData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/trainingimages", numTraining,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  # trainingLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/traininglabels", numTraining)
+  # rawValidationData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/validationimages", numTest,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  # validationLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/validationlabels", numTest)
+  # rawTestData = samples.loadDataFile("./Assignment-Two/python/data/digitdata/testimages", numTest,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  # testLabels = samples.loadLabelsFile("./Assignment-Two/python/data/digitdata/testlabels", numTest)
     
   # Extract features
   print "Extracting features..."
-  trainingData = map(featureFunction, rawTrainingData)
-  validationData = map(featureFunction, rawValidationData)
-  testData = map(featureFunction, rawTestData)
-  
+  # trainingData = map(featureFunction, rawTrainingData)
+  # validationData = map(featureFunction, rawValidationData)
+  # testData = map(featureFunction, rawTestData)
+
+  f = open('./Assignment-Two/python/data/trainLabel.json', 'r')
+  x = f.readlines()
+  trainingLabels=json.loads(x[0])[0:numTraining]
+  f.flush()
+  f.close()
+  f = open('./Assignment-Two/python/data/validLabel.json', 'r')
+  x = f.readlines()
+  validationLabels=json.loads(x[0])[0:numTraining]
+  f.flush()
+  f.close()
+  f = open('./Assignment-Two/python/data/testLabel.json', 'r')
+  x = f.readlines()
+  testLabels=json.loads(x[0])[0:numTest]
+  f.flush()
+  f.close()
+  f = open('./Assignment-Two/python/data/trainData.json', 'r')
+  x = f.readlines()
+  trainingData =json.loads(x[0])[0:numTraining]
+  f.flush()
+  f.close()
+  f = open('./Assignment-Two/python/data/validData.json', 'r')
+  x = f.readlines()
+  validationData =json.loads(x[0])[0:numTraining]
+  f.flush()
+  f.close()
+  f = open('./Assignment-Two/python/data/testData.json', 'r')
+  x = f.readlines()
+  testData =json.loads(x[0])[0:numTest]
+  f.flush()
+  f.close()
+
+  # print "trainingData length " +str(len(trainingData))
+  # print "validationData length " +str(len(validationData))
+  # print "testData length " +str(len(testData))
+
   # Conduct training and testing
   print "Training..."
   classifier.train(trainingData, trainingLabels, validationData, validationLabels)
@@ -192,13 +231,13 @@ def runClassifier(args, options):
   guesses = classifier.classify(testData)
   correct = [guesses[i] == testLabels[i] for i in range(len(testLabels))].count(True)
   print str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels))
-  analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
+  # analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
   if((options.weights) & (options.classifier == "perceptron")):
     for l in classifier.legalLabels:
       features_weights = classifier.findHighWeightFeatures(l)
       print ("=== Features with high weight for label %d ==="%l)
-      printImage(features_weights)
+      # printImage(features_weights)
 
 if __name__ == '__main__':
   # Read input

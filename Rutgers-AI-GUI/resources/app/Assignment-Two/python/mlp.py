@@ -89,10 +89,14 @@ class MLPClassifier:
       sum_error = 0
       outputs = self.forward_propagate(network, train)
       expected = [0 for i in range(n_outputs)]
-      expected[train[-1]] = 1
-      sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
-      self.backward_propagate_error(network, expected)
-      self.update_weights(network, train, l_rate)
+      try:
+        expected[train[-1]] = 1
+        sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
+        self.backward_propagate_error(network, expected)
+        self.update_weights(network, train, l_rate)
+      except:
+        print train[-1]
+        return
 
 
 
@@ -100,20 +104,20 @@ class MLPClassifier:
   def train( self, trainingData, trainingLabels, validationData, validationLabels ):
     n_inputs = len(trainingData[0])
     n_outputs = len(self.legalLabels)
-    self.network = self.initialize_network(n_inputs, 28, n_outputs)
+    self.network = self.initialize_network(n_inputs, n_outputs*2, n_outputs)
     for iteration in range(self.max_iterations):
       print "Starting iteration ", iteration, "..."
       for i in range(len(trainingData)):
         # Test training backprop algorithm
         trainingCluster=list()
-        trainingCluster.extend(trainingData[i].values())
+        trainingCluster.extend(trainingData[i])
         trueLabel = trainingLabels[i]
         trainingCluster.append(trueLabel)
         self.train_network(self.network, trainingCluster, 0.5, n_outputs)
 
       for i in range(len(validationData)):
         trainingCluster = list()
-        trainingCluster.extend(validationData[i].values())
+        trainingCluster.extend(validationData[i])
         trueLabel = validationLabels[i]
         trainingCluster.append(trueLabel)
         self.train_network(self.network, trainingCluster, 0.5, n_outputs)
@@ -129,7 +133,7 @@ class MLPClassifier:
       # fill predictions in the guesses list
       "*** YOUR CODE HERE ***"
       trainingCluster = list()
-      trainingCluster.extend(datum.values())
+      trainingCluster.extend(datum)
       guessLabel = random()
       trainingCluster.append(guessLabel)
       prediction = self.predict(self.network, trainingCluster)

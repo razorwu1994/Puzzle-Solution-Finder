@@ -685,75 +685,101 @@ var puzzleDataCombo = function(){
     var LabelSet=[]
     while(counter<trainSize){
         puzzleInput(false);
-        LabelSet.push(puzzleEvaluation(false))
+        let tempEval =puzzleEvaluation(false)
+        while(tempEval<0){
+            puzzleInput(false);
+            tempEval=puzzleEvaluation(false)
+        }
+        LabelSet.push(tempEval)
         DataSet.push(dataMatrix.reduce(function(a, b) {
             return a.concat(b);
           }))
         counter++
     }
-    fs.writeFile("./Assignment-Two/python/data/trainData.txt", JSON.stringify(DataSet), (err) => {
+    fs.writeFile("./Assignment-Two/python/data/trainData.json", JSON.stringify(DataSet), (err) => {
             if (err) {
                 console.error(err);
                 return;
             };
     });
-    fs.writeFile("./Assignment-Two/python/data/trainLabel.txt", LabelSet, (err) => {
+    fs.writeFile("./Assignment-Two/python/data/trainLabel.json", JSON.stringify(LabelSet), (err) => {
         if (err) {
             console.error(err);
             return;
         };
     });
     console.log("finish write train data and its label")
-
+    globalMax = LabelSet.reduce((a,b)=>(Math.max(a,b)))
+    globalMin = LabelSet.reduce((a,b)=>(Math.min(a,b)))
+    
+    console.log("so far max is "+globalMax)
     DataSet=[]
     LabelSet=[]
     counter = 0
     while(counter<validSize){
         puzzleInput(false);
-        LabelSet.push(puzzleEvaluation(false))
+        let tempEval =puzzleEvaluation(false)
+        while(tempEval<0){
+            puzzleInput(false);
+            tempEval=puzzleEvaluation(false)
+        }
+        LabelSet.push(tempEval)
         DataSet.push(dataMatrix.reduce(function(a, b) {
             return a.concat(b);
           }))
         counter++
     }
-    fs.writeFile("./Assignment-Two/python/data/validData.txt", JSON.stringify(DataSet), (err) => {
+    fs.writeFile("./Assignment-Two/python/data/validData.json", JSON.stringify(DataSet), (err) => {
             if (err) {
                 console.error(err);
                 return;
             };
     });
-    fs.writeFile("./Assignment-Two/python/data/validLabel.txt", LabelSet, (err) => {
+    fs.writeFile("./Assignment-Two/python/data/validLabel.json", JSON.stringify(LabelSet), (err) => {
         if (err) {
             console.error(err);
             return;
         };
     });
     console.log("finish write valid data and its label")
-
+    globalMax = Math.max(globalMax,LabelSet.reduce((a,b)=>(Math.max(a,b))))
+    globalMin = Math.min(globalMin,LabelSet.reduce((a,b)=>(Math.min(a,b))))
+    
+    console.log("so far max is "+globalMax)    
     counter = 0
     DataSet=[]
     LabelSet=[]
     while(counter<testSize){
-    puzzleInput(false);
-    LabelSet.push(puzzleEvaluation(false))
+        puzzleInput(false);
+        let tempEval =puzzleEvaluation(false)
+        while(tempEval<0){
+            puzzleInput(false);
+            tempEval=puzzleEvaluation(false)
+        }
+        LabelSet.push(tempEval)
     DataSet.push(dataMatrix.reduce(function(a, b) {
         return a.concat(b);
       }))    
     counter++
     }
-    fs.writeFile("./Assignment-Two/python/data/testData.txt", JSON.stringify(DataSet), (err) => {
+    fs.writeFile("./Assignment-Two/python/data/testData.json", JSON.stringify(DataSet), (err) => {
         if (err) {
             console.error(err);
             return;
         };
     });
-    fs.writeFile("./Assignment-Two/python/data/testLabel.txt", LabelSet, (err) => {
+    fs.writeFile("./Assignment-Two/python/data/testLabel.json", JSON.stringify(LabelSet), (err) => {
     if (err) {
         console.error(err);
         return;
     };
     });
     console.log("finish write test data and its label")
+    globalMax = Math.max(globalMax,LabelSet.reduce((a,b)=>(Math.max(a,b))))
+    globalMin = Math.min(globalMin,LabelSet.reduce((a,b)=>(Math.min(a,b))))
+    
+    document.getElementById("labelsizeinfo").innerText="upperbound : "+globalMax+"\nlowerbound : "+globalMin
+
 }
 /**
  * Generate a valid, random puzzle based on the chosen size

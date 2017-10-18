@@ -17,18 +17,29 @@
     <button onclick="reveal()">Next Page</button>
     <div id="assignTwo">
         <div style="display:flex;flex-direction:row;flex-wrap:wrap">
-            -c
-            <select id="-c">
+            <div>
+                -label upperbound
+                <input type="text" id="-lmax" value='50' /> -label lowerbound
+                <input type="text" id="-lmin" value='0' />
+            </div>
+            <div>
+                -c
+                <select id="-c">
             <option value='mlp'>mlp</option>
             <option value='perceptron'>perceptron</option>
-        </select> -t <input type="text" id="-t" value='5000' /> -s <input type="text" id="-s" value='1000' /> -i <input type="text" id="-i" value='3' />
-            <button onclick="runClassifier()" style="height:20px;width:20vw" /> Submit Command training size
-            <br/>
+            </select>
+            </div>
+            <div>
+                -t <input type="text" id="-t" value='5000' /> -s <input type="text" id="-s" value='1000' /> -i <input type="text" id="-i" value='3' />
+                <button onclick="runClassifier()" style="height:20px;width:20vw" /> Submit Command
+                <br/>
+            </div>
         </div>
         <div style="display:flex;flex-direction:row">
-            <input type="text" id="trainSize" value='500' /> validation size<input type="text" id="validSize" value='500' /> testing size<input type="text" id="testSize" value='500' />
+            training size<input type="text" id="trainSize" value='500' /> validation size<input type="text" id="validSize" value='500' /> testing size<input type="text" id="testSize" value='500' />
         </div>
         <button onclick="puzzleDataCombo()" style="height:20px;width:20vw" /> Generate Puzzle </br>
+        <h1 id="labelsizeinfo" style="color:black;font-weight:bold;"></h1>
     </div>
     <div id="assignOne" style="display:none">
         <div>

@@ -7,13 +7,15 @@ let mode = document.getElementById("-c").value
 let trainningData = document.getElementById("-t").value
 let testingData = document.getElementById("-s").value
 let iteration = document.getElementById("-i").value
+let labelmax = document.getElementById("-lmax").value
+let labelmin = document.getElementById("-lmin").value
 
 var myPythonScriptPath = './Assignment-Two/python/dataClassifier.py';
 // Use python shell
 var PythonShell = require('python-shell');
 var options = {
     mode: 'text',
-    args: ['-c',mode,'-t', trainningData,'-s',testingData,'-i',iteration]
+    args: ['-c',mode,'-t', trainningData,'-s',testingData,'-i',iteration,'-l',labelmin,'-u',labelmax]
 };
     console.log("start")
 PythonShell.run(myPythonScriptPath, options, function (err, results) {
