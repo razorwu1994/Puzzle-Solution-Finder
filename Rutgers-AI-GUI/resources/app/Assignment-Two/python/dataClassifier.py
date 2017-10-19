@@ -230,6 +230,11 @@ def runClassifier(args, options):
   print "Testing..."
   guesses = classifier.classify(testData)
   correct = [guesses[i] == testLabels[i] for i in range(len(testLabels))].count(True)
+  almost = [abs(guesses[i] - testLabels[i])<=2 for i in range(len(testLabels))].count(True)
+  for i in range(len(testLabels)):
+      print "Guess : "+str(guesses[i])+" True : "+str(testLabels[i])
+
+  print str(almost), ("almost correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * almost / len(testLabels))
   print str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels))
   # analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 

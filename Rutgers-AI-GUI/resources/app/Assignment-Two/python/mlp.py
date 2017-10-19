@@ -3,6 +3,7 @@
 
 # mlp implementation
 import util
+import math
 from random import random
 import numpy
 PRINT = True
@@ -19,9 +20,9 @@ class MLPClassifier:
   # Initialize a network
   def initialize_network(self,n_inputs, n_hidden, n_outputs):
     network = list()
-    hidden_layer = [{'weights': [random() for i in range(n_inputs + 1)]} for i in range(n_hidden)]
+    hidden_layer = [{'weights': [0.01/n_hidden*random() for i in range(n_inputs + 1)]} for i in range(n_hidden)]
     network.append(hidden_layer)
-    output_layer = [{'weights': [random() for i in range(n_hidden + 1)]} for i in range(n_outputs)]
+    output_layer = [{'weights': [0.01/n_outputs*random() for i in range(n_hidden + 1)]} for i in range(n_outputs)]
     network.append(output_layer)
     return network
 
@@ -34,7 +35,7 @@ class MLPClassifier:
 
   # Transfer neuron activation
   def transfer(self,activation):
-      return numpy.tanh(activation)
+      return activation%len(self.legalLabels)
 
 
 
@@ -45,7 +46,7 @@ class MLPClassifier:
       new_inputs = []
       for neuron in layer:
         activation = self.activate(neuron['weights'], inputs)
-        neuron['output'] = self.transfer(activation/100)
+        neuron['output'] = self.transfer(activation/(len(self.legalLabels)))
         new_inputs.append(neuron['output'])
       inputs = new_inputs
     return inputs
@@ -91,12 +92,11 @@ class MLPClassifier:
       expected = [0 for i in range(n_outputs)]
       try:
         expected[train[-1]] = 1
-        sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
-        self.backward_propagate_error(network, expected)
-        self.update_weights(network, train, l_rate)
       except:
-        print train[-1]
-        return
+        expected[n_outputs-1]=1
+      sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
+      self.backward_propagate_error(network, expected)
+      self.update_weights(network, train, l_rate)
 
 
 
@@ -104,7 +104,7 @@ class MLPClassifier:
   def train( self, trainingData, trainingLabels, validationData, validationLabels ):
     n_inputs = len(trainingData[0])
     n_outputs = len(self.legalLabels)
-    self.network = self.initialize_network(n_inputs, n_outputs*2, n_outputs)
+    self.network = self.initialize_network(n_inputs, 50, n_outputs)
     for iteration in range(self.max_iterations):
       print "Starting iteration ", iteration, "..."
       for i in range(len(trainingData)):
@@ -134,7 +134,7 @@ class MLPClassifier:
       "*** YOUR CODE HERE ***"
       trainingCluster = list()
       trainingCluster.extend(datum)
-      guessLabel = random()
+      guessLabel = math.floor(random()*len(self.legalLabels))
       trainingCluster.append(guessLabel)
       prediction = self.predict(self.network, trainingCluster)
       guesses.append(prediction)
