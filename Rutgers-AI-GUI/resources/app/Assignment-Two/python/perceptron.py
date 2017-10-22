@@ -36,7 +36,7 @@ class PerceptronClassifier:
     (and thus represents a vector a values).
     """
     
-    self.features = trainingData[0].keys() # could be useful later
+    # self.features = trainingData[0].keys() # could be useful later
     # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING
     print (len(trainingData))
     #
@@ -48,8 +48,8 @@ class PerceptronClassifier:
         " Find the assigned label of training data i "
         alpha = 0.01 # Learning rate
         
-        xKeys = trainingData[i].keys() # Keys for corresponding bits of training data
-        x = trainingData[i].values() # Input vector of trainingData[i]
+        xKeys = range(len(trainingData[i]))
+        x = trainingData[i] # Input vector of trainingData[i]
         xCounter = util.Counter()
         for j in range(len(xKeys)):
           xCounter[xKeys[j]] = x[j]
@@ -73,7 +73,7 @@ class PerceptronClassifier:
 
         " Otherwise, update weights using perceptron learning rule w_i' <- w_i + a * (y - h(x)) * x_i "
         " Need to update both the true label's weights y and the assigned label's weights y' "
-        xCounter.divideAll((1/alpha)) # multiply input with alpha
+        xCounter.divideAll((1.0/alpha)) # multiply input with alpha
         self.weights[assignedLabel] = self.weights[assignedLabel] -  xCounter # assigned label was incorrect, so decrease weights
         self.weights[trueLabel] = self.weights[trueLabel] + xCounter # true label's was not picked, so increase weight based on true example x
         #-----------------------------------------------------------------------------------------------------------------

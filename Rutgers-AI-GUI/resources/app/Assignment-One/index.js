@@ -683,12 +683,15 @@ var puzzleDataCombo = function(){
     let counter = 0
     var DataSet=[]
     var LabelSet=[]
-    while(counter<trainSize){
+    while(counter<=trainSize){
         puzzleInput(false);
         let tempEval =puzzleEvaluation(false)
         while(tempEval<0){
             puzzleInput(false);
             tempEval=puzzleEvaluation(false)
+        }
+        if(counter%2==0){
+            tempEval=basicHillClimb("basic")
         }
         LabelSet.push(tempEval)
         DataSet.push(dataMatrix.reduce(function(a, b) {
@@ -749,18 +752,21 @@ var puzzleDataCombo = function(){
     counter = 0
     DataSet=[]
     LabelSet=[]
-    while(counter<testSize){
+    while(counter<=testSize){
         puzzleInput(false);
         let tempEval =puzzleEvaluation(false)
         while(tempEval<0){
             puzzleInput(false);
             tempEval=puzzleEvaluation(false)
         }
+        if(counter%2==0){
+            tempEval=basicHillClimb("basic")
+        }
         LabelSet.push(tempEval)
-    DataSet.push(dataMatrix.reduce(function(a, b) {
-        return a.concat(b);
-      }))    
-    counter++
+        DataSet.push(dataMatrix.reduce(function(a, b) {
+            return a.concat(b);
+          }))
+        counter++
     }
     fs.writeFile("./Assignment-Two/python/data/testData.json", JSON.stringify(DataSet), (err) => {
         if (err) {

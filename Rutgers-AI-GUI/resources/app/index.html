@@ -38,6 +38,9 @@
         <div style="display:flex;flex-direction:row">
             training size<input type="text" id="trainSize" value='500' /> validation size<input type="text" id="validSize" value='500' /> testing size<input type="text" id="testSize" value='500' />
         </div>
+        # of iterations: <input value='1' type="text" id="climb_iteration" />
+        <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
+        <input type="text" id="ga_compTime" placeholder="default 1" /> </br>
         <button onclick="puzzleDataCombo()" style="height:20px;width:20vw" /> Generate Puzzle </br>
         <h1 id="labelsizeinfo" style="color:black;font-weight:bold;"></h1>
     </div>
