@@ -15,7 +15,7 @@
 
 <body>
     <button onclick="reveal()">Next Page</button>
-    <div id="assignTwo">
+    <div id="assignTwo" style="display:flex;flex-direction:column;flex-wrap:wrap">
         <div style="display:flex;flex-direction:row;flex-wrap:wrap">
             <div>
                 -label upperbound
@@ -24,7 +24,8 @@
             </div>
             <div>
                 -c
-                <select id="-c">
+                <select id="-c" value='svm'>
+            <option value='svm'>svm</option>                        
             <option value='mlp'>mlp</option>
             <option value='perceptron'>perceptron</option>
             </select>
@@ -38,10 +39,18 @@
         <div style="display:flex;flex-direction:row">
             training size<input type="text" id="trainSize" value='500' /> validation size<input type="text" id="validSize" value='500' /> testing size<input type="text" id="testSize" value='500' />
         </div>
-        # of iterations: <input value='1' type="text" id="climb_iteration" />
-        <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
-        <input type="text" id="ga_compTime" placeholder="default 1" /> </br>
-        <button onclick="puzzleDataCombo()" style="height:20px;width:20vw" /> Generate Puzzle </br>
+        <div>
+            # of iterations for basic hillclimbing: <input value='1' type="text" id="climb_iteration" style="width:10em" /><br/>
+            <span style="color:darkred"> computation time (seconds) to stop (even the time excess,a full iteration won't stop until it is finished) :</span>
+            <input type="text" id="ga_compTime" placeholder="default 1" style="width:10em" /> </br>
+            <button onclick="puzzleDataCombo()" style="height:20px;width:10vw" /> Generate Puzzle
+            </br>
+        </div>
+        <input id="EC_size" style="height:20px;width:3em;margin-top:2em" value="50" />
+        <div style="display:flex;flex-direction:row;justify-content:flex-start;padding-top:1em">
+            <input type="file" id="fileForUpload" /></br>
+            <button onclick="flatMatrixToFile()" style="height:20px;width:10em">Flatten matrix</button>
+        </div>
         <h1 id="labelsizeinfo" style="color:black;font-weight:bold;"></h1>
     </div>
     <div id="assignOne" style="display:none">

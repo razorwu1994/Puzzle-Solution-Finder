@@ -798,7 +798,7 @@ var puzzleInput = function (drawORnot) {
     theTree = [];
 
     cleanCanvas(0);
-    if(!drawORnot)puzzleSideNumber=50//extra credit we play around with 50
+    if(!drawORnot)puzzleSideNumber = document.getElementById("EC_size").value //extra credit we play around with 50
     else puzzleSideNumber = parseInt(document.getElementById("input").value)
 
     initializeMatrix();

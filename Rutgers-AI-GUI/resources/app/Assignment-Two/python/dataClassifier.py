@@ -123,7 +123,9 @@ def readCommand( argv ):
   # featureFunction = basicFeatureExtractorDigit
 
   legalLabels = range(options.legallabelmax+1)[options.legallabelmin:options.legallabelmax+1]
-    
+
+  print "legal length : "+str(len(legalLabels))
+
   if options.training <= 0:
     print "Training set size should be a positive integer (you provided: %d)" % options.training
     print USAGE_STRING
